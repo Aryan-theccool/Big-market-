@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
+import { triggerImageUpload } from '../../utils/imageHelper';
 
 interface Command {
   id: string;
@@ -38,7 +39,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     { id: 'text',    label: 'Add text',               shortcut: 'T',  section: 'Elements', action: () => { store.setTool('text'); onClose(); } },
     { id: 'rect',    label: 'Draw rectangle',         shortcut: 'R',  section: 'Elements', action: () => { store.setTool('rect'); onClose(); } },
     { id: 'circle',  label: 'Draw circle',            shortcut: 'C',  section: 'Elements', action: () => { store.setTool('circle'); onClose(); } },
-    { id: 'image',   label: 'Add image',              shortcut: 'I',  section: 'Elements', action: () => { store.setTool('image'); onClose(); } },
+    { id: 'image',   label: 'Add image',              shortcut: 'I',  section: 'Elements', action: () => { triggerImageUpload(store, toast); onClose(); } },
     { id: 'del',     label: 'Delete selected',        shortcut: 'Del',section: 'Elements', action: () => { store.deleteSelected(); onClose(); } },
     { id: 'dup',     label: 'Duplicate selected',     shortcut: '⌘D', section: 'Elements', action: () => { store.duplicateSelected(); onClose(); } },
     { id: 'sall',    label: 'Select all',             shortcut: '⌘A', section: 'Elements', action: () => { store.setSelected(store.elements.map(e => e.id)); onClose(); } },

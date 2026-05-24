@@ -26,12 +26,22 @@ export function useCollabSync(roomId: string) {
     if (!roomId) return;
     const { doc, yElements } = getYRoom(roomId);
 
-    const observe = () => {
-      if (suppressRef.current) return;
+    const observe = (event: any, transaction: any) => {
+      // Skip updates made locally to prevent loops and sync lag
+      if (transaction.local) return;
+      
       const els: CanvasElement[] = [];
       yElements.forEach((val: CanvasElement) => els.push(val));
       els.sort((a, b) => (a.z || 0) - (b.z || 0));
+
+      // Temporarily block writeback while setting the remote state
+      suppressRef.current = true;
       canvasStore.setElements(els);
+      
+      // Allow writeback again after React render finishes
+      setTimeout(() => {
+        suppressRef.current = false;
+      }, 0);
     };
     yElements.observe(observe);
 
@@ -77,8 +87,11 @@ export function useCollabSync(roomId: string) {
   const elements = canvasStore.elements;
   useEffect(() => {
     if (!roomId) return;
+    
+    // Ignore updates that were triggered by Yjs remote observes
+    if (suppressRef.current) return;
+
     const { doc, yElements } = getYRoom(roomId);
-    suppressRef.current = true;
     doc.transact(() => {
       const currentIds = new Set(elements.map((e) => e.id));
       yElements.forEach((_: any, key: string) => {
@@ -86,7 +99,6 @@ export function useCollabSync(roomId: string) {
       });
       elements.forEach((el) => yElements.set(el.id, el));
     });
-    suppressRef.current = false;
   }, [elements, roomId]);
 
   // Broadcast cursor position in canvas coordinates
