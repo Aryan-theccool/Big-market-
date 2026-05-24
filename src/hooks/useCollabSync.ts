@@ -16,6 +16,7 @@ export function useCollabSync(roomId: string) {
   const canvasStore = useCanvasStore();
   const { setRemoteUsers } = useCollabStore();
   const suppressRef = useRef(false);
+  const lastSyncRef = useRef<string>('');
   const providerRef = useRef<any>(null);
   const awarenessHandlerRef = useRef<(() => void) | null>(null);
   // Stable local user identity — must not change between renders
@@ -36,12 +37,13 @@ export function useCollabSync(roomId: string) {
 
       // Temporarily block writeback while setting the remote state
       suppressRef.current = true;
+      lastSyncRef.current = JSON.stringify(els);
       canvasStore.setElements(els);
       
       // Allow writeback again after React render finishes
       setTimeout(() => {
         suppressRef.current = false;
-      }, 0);
+      }, 50);
     };
     yElements.observe(observe);
 
@@ -91,14 +93,21 @@ export function useCollabSync(roomId: string) {
     // Ignore updates that were triggered by Yjs remote observes
     if (suppressRef.current) return;
 
+    const currentStr = JSON.stringify(elements);
+    if (currentStr === lastSyncRef.current) return;
+    lastSyncRef.current = currentStr;
+
     const { doc, yElements } = getYRoom(roomId);
     doc.transact(() => {
       const currentIds = new Set(elements.map((e) => e.id));
       yElements.forEach((_: any, key: string) => {
         if (!currentIds.has(key)) yElements.delete(key);
       });
-      elements.forEach((el) => yElements.set(el.id, el));
-    });
+      elements.forEach((el) => {
+        // Deep copy to prevent strict mode mutation errors
+        yElements.set(el.id, JSON.parse(JSON.stringify(el)));
+      });
+    }, 'local');
   }, [elements, roomId]);
 
   // Broadcast cursor position in canvas coordinates
