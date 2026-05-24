@@ -436,13 +436,13 @@ export const RoughShape: React.FC<RoughShapeProps> = ({ element, isSelected, onP
     let node: SVGElement | null = null;
     switch (element.type) {
       case 'rect':
-        node = rc.rectangle(pad, pad, bw - pad * 2, bh - pad * 2, { ...opts, cornerRadius: element.radius || 0 });
+        node = rc.rectangle(pad, pad, bw, bh, { ...opts, cornerRadius: element.radius || 0 });
         break;
       case 'circle':
-        node = rc.ellipse(bw / 2, bh / 2, bw - pad * 2, bh - pad * 2, { ...opts });
+        node = rc.ellipse(bw / 2 + pad, bh / 2 + pad, bw, bh, { ...opts });
         break;
       case 'frame':
-        node = rc.rectangle(pad, pad, bw - pad * 2, bh - pad * 2, {
+        node = rc.rectangle(pad, pad, bw, bh, {
           ...opts,
           roughness: 0.6,
           fillStyle: 'solid' as const,
@@ -593,6 +593,7 @@ export const ImageElement: React.FC<ElementProps> = ({ element, isSelected, onPo
         src={element.src || ''}
         alt="Canvas element"
         className="w-full h-full object-contain pointer-events-none select-none"
+        draggable={false}
         style={{
           transform: `scaleX(${element.flipH ? -1 : 1}) scaleY(${element.flipV ? -1 : 1})`,
         }}
