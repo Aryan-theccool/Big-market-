@@ -4,18 +4,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import LaptopShowcase from '@/components/ui/LaptopShowcase';
 
+import { useCanvasStore } from '@/store/canvasStore';
+
 /* ─── Tokens ─────────────────────────────────────────────────────────────── */
 /* ─── Tokens ─────────────────────────────────────────────────────────────── */
-const BG      = '#ffffff'; /* Snow surface */
-const BG2     = '#f5f5f7'; /* Fog canvas */
-const BORDER  = '#e8e8ed'; /* Silver Mist */
-const ACCENT  = '#0071e3'; /* Azure accent */
-const ACCENTL = 'rgba(0,113,227,0.08)';
-const T1      = '#1d1d1f'; /* Ink primary text */
-const T2      = '#707070'; /* Graphite secondary text */
-const T3      = '#474747'; /* Slate tertiary text */
+const BG      = 'var(--bg-surface)'; /* Snow surface */
+const BG2     = 'var(--bg-canvas)'; /* Fog canvas */
+const BORDER  = 'var(--border)'; /* Silver Mist */
+const ACCENT  = 'var(--accent)'; /* Azure accent */
+const ACCENTL = 'var(--accent-glow)';
+const T1      = 'var(--text-primary)'; /* Ink primary text */
+const T2      = 'var(--text-secondary)'; /* Graphite secondary text */
+const T3      = 'var(--text-muted)'; /* Slate tertiary text */
 const FD      = '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif';
 const FM      = '"Fira Code", ui-monospace, monospace';
+
+function SunIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>; }
+function MoonIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>; }
 
 /* ─── Animated canvas hero preview ──────────────────────────────────────── */
 function HeroCanvas() {
@@ -111,11 +116,14 @@ function HeroCanvas() {
 /* ─── Navbar ─────────────────────────────────────────────────────────────── */
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const store = useCanvasStore();
+
   useEffect(() => {
+    store.hydrate();
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
-  }, []);
+  }, [store]);
  
   return (
     <nav style={{
@@ -136,23 +144,26 @@ function Navbar() {
           <span style={{ fontFamily: FD, fontSize: 14, fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.2px' }}>Inkspace</span>
         </a>
  
-        <div className="hidden md:flex" style={{ gap: 24 }}>
+        <div className="hidden md:flex gap-6">
           {['Features', 'Templates', 'Pricing', 'Community'].map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} style={{ fontFamily: FD, fontSize: 12, fontWeight: 400, color: '#707070', textDecoration: 'none', transition: 'color 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#1d1d1f'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#707070'; }}>
+            <a key={l} href={`#${l.toLowerCase()}`} style={{ fontFamily: FD, fontSize: 13, fontWeight: 500, color: T2, textDecoration: 'none', transition: 'color 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = T1; }}
+              onMouseLeave={e => { e.currentTarget.style.color = T2; }}>
               {l}
             </a>
           ))}
         </div>
  
         <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-          <Link href="/boards" style={{ fontFamily: FD, fontSize: 12, fontWeight: 400, color: '#707070', textDecoration: 'none', transition: 'color 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#1d1d1f')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#707070')}>
+          <button onClick={store.toggleTheme} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: T2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {store.theme === 'light' ? <MoonIcon /> : <SunIcon />}
+          </button>
+          <Link href="/boards" style={{ fontFamily: FD, fontSize: 13, fontWeight: 500, color: T2, textDecoration: 'none', transition: 'color 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = T1)}
+            onMouseLeave={e => (e.currentTarget.style.color = T2)}>
             Log in
           </Link>
-          <Link href="/boards" style={{ fontFamily: FD, fontSize: 12, fontWeight: 400, color: 'white', background: ACCENT, textDecoration: 'none', padding: '4px 12px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', transition: 'background 0.15s' }}
+          <Link href="/boards" style={{ fontFamily: FD, fontSize: 13, fontWeight: 500, color: 'white', background: ACCENT, textDecoration: 'none', padding: '6px 16px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', transition: 'background 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.background = '#0066cc'; }}
             onMouseLeave={e => { e.currentTarget.style.background = ACCENT; }}>
             Get Started
@@ -164,10 +175,56 @@ function Navbar() {
 }
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
+function HeroNote({ text, color, rot, top, left, right, bottom, delay }: any) {
+  const bg = color === 'yellow' ? '#FEF3B0' : color === 'pink' ? '#FECDD3' : color === 'blue' ? '#BFDBFE' : color === 'green' ? '#BBF7D0' : '#E5E7EB';
+  const textCol = color === 'yellow' ? '#4A3800' : color === 'pink' ? '#4A0020' : color === 'blue' ? '#003060' : color === 'green' ? '#003010' : '#1C1C1E';
+  
+  return (
+    <div className="hidden md:flex" style={{
+      position: 'absolute', top, left, right, bottom,
+      transform: `rotate(${rot}deg)`,
+      background: bg,
+      padding: '16px 24px',
+      borderRadius: '2px 8px 12px 2px',
+      boxShadow: '4px 12px 24px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.05)',
+      fontFamily: "'Caveat', cursive",
+      fontSize: 24,
+      color: textCol,
+      animation: `float 6s ease-in-out ${delay}s infinite`,
+      zIndex: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 140,
+      textAlign: 'center'
+    }}>
+      {/* Tape */}
+      <div style={{
+        position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%) rotate(-2deg)',
+        width: 56, height: 22, background: 'rgba(255,255,255,0.5)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)', backdropFilter: 'blur(4px)'
+      }} />
+      {/* Fold */}
+      <div style={{
+        position: 'absolute', bottom: 0, right: 0, width: 28, height: 28,
+        background: 'linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.08) 50%)',
+        borderRadius: '0 0 12px 0'
+      }} />
+      {text}
+    </div>
+  );
+}
+
 function Hero() {
   return (
-    <section style={{ paddingTop: 110, paddingBottom: 80, background: BG2, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+    <section style={{ paddingTop: 140, paddingBottom: 80, background: BG2, position: 'relative', overflow: 'hidden' }}>
+      
+      {/* Floating background notes */}
+      <HeroNote text="Brainstorming..." color="yellow" rot={-6} top="28%" left="10%" delay={0} />
+      <HeroNote text="Real-time sync!" color="pink" rot={4} top="25%" right="12%" delay={1} />
+      <HeroNote text="Infinite space" color="blue" rot={8} bottom="20%" left="6%" delay={0.5} />
+      <HeroNote text="Dark mode supported" color="green" rot={-4} bottom="25%" right="8%" delay={1.5} />
+
+      <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', zIndex: 10 }}>
         {/* Eyebrow / Badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: BG, border: `1px solid ${BORDER}`, borderRadius: 100, padding: '5px 14px', marginBottom: 28 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34C759', animation: 'pulse-glow 2s ease-in-out infinite' }}/>
@@ -187,9 +244,9 @@ function Hero() {
  
         {/* CTAs: Single primary Black Pill + Cobalt Inline Text Link */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 20, animation: 'fade-slide-up 0.45s 0.18s both' }}>
-          <Link href="/boards" style={{ fontFamily: FD, fontSize: 17, fontWeight: 400, color: 'white', background: '#000000', textDecoration: 'none', padding: '10px 24px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', gap: 8 }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#1d1d1f'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#000000'; }}>
+          <Link href="/boards" style={{ fontFamily: FD, fontSize: 17, fontWeight: 400, color: 'var(--bg-surface)', background: T1, textDecoration: 'none', padding: '10px 24px', borderRadius: 999, display: 'inline-flex', alignItems: 'center', gap: 8 }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
             Start Creating
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </Link>
