@@ -138,7 +138,10 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   setTheme: (theme) => {
     set({ theme });
-    if (typeof document !== 'undefined') document.body.dataset.theme = theme;
+    if (typeof document !== 'undefined') {
+      document.documentElement.dataset.theme = theme;
+      document.body.dataset.theme = theme;
+    }
   },
 
   toggleTheme: () => {
