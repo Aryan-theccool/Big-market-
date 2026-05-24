@@ -722,7 +722,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
                 y: ny + relY * scaleY,
               };
             });
-            if (next.points.length) {
+            if (next.points && next.points.length) {
               next.x = Math.min(...next.points.map((p: any) => p.x));
               next.y = Math.min(...next.points.map((p: any) => p.y));
             }
