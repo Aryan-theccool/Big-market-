@@ -23,10 +23,15 @@ export function getYRoom(roomId: string) {
 
 export function getOrInitProvider(roomId: string, doc: Y.Doc): Promise<any> {
   if (providerPromises.has(roomId)) return providerPromises.get(roomId)!;
-  // Use a reliable public websocket server (demos.yjs.dev) which guarantees instant cross-device sync
-  // and avoids WebRTC firewall/NAT issues.
-  const p = import('y-websocket').then(({ WebsocketProvider }) =>
-    new WebsocketProvider('wss://demos.yjs.dev/ws', `inkspace-board-${roomId}`, doc)
+  // Use stable public WebRTC signaling servers since demos.yjs.dev (websocket) is currently offline
+  const p = import('y-webrtc').then(({ WebrtcProvider }) =>
+    new WebrtcProvider(roomId, doc, {
+      signaling: [
+        'wss://signaling.yjs.dev',
+        'wss://y-webrtc-signaling-eu.herokuapp.com',
+        'wss://y-webrtc-signaling-us.herokuapp.com',
+      ]
+    })
   );
   providerPromises.set(roomId, p);
   return p;
