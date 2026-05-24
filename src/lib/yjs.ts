@@ -23,10 +23,14 @@ export function getYRoom(roomId: string) {
 
 export function getOrInitProvider(roomId: string, doc: Y.Doc): Promise<any> {
   if (providerPromises.has(roomId)) return providerPromises.get(roomId)!;
-  // Empty signaling array = BroadcastChannel only (same browser, no external WS)
-  // Avoids unreliable public signaling servers that spam console errors
+  // Use stable public signaling servers to connect cross-profile Google accounts, browsers, and physical devices
   const p = import('y-webrtc').then(({ WebrtcProvider }) =>
-    new WebrtcProvider(roomId, doc, { signaling: [] })
+    new WebrtcProvider(roomId, doc, {
+      signaling: [
+        'wss://y-webrtc-signaling-eu.herokuapp.com',
+        'wss://y-webrtc-signaling-us.herokuapp.com'
+      ]
+    })
   );
   providerPromises.set(roomId, p);
   return p;
