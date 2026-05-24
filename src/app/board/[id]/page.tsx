@@ -16,6 +16,7 @@ import { CommandPalette } from '../../../components/ui/CommandPalette';
 import { RemoteCursors } from '../../../components/collab/RemoteCursors';
 import { TemplateModal, useTemplateModal } from '../../../components/ui/TemplateModal';
 import { useCollabSync } from '../../../hooks/useCollabSync';
+import { triggerImageUpload } from '../../../utils/imageHelper';
 
 interface Toast { id: string; message: string; type: 'info' | 'success' | 'error' | 'warning'; }
 
@@ -211,8 +212,9 @@ export default function BoardIdPage() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') { store.copySelected(); return; }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'v') { store.pasteSelected(); return; }
       if ((e.metaKey || e.ctrlKey) && e.key === '0') { e.preventDefault(); store.fitToScreen(vpSize.w, vpSize.h); return; }
-      const keyMap: Record<string, string> = { v: 'select', h: 'hand', n: 'note', t: 'text', w: 'handwriting', r: 'rect', c: 'circle', l: 'line', a: 'arrow', d: 'draw', i: 'image', f: 'frame', e: 'export' };
+      const keyMap: Record<string, string> = { v: 'select', h: 'hand', n: 'note', t: 'text', r: 'rect', c: 'circle', l: 'line', a: 'arrow', d: 'draw', e: 'eraser', f: 'frame', q: 'export' };
       if (keyMap[e.key.toLowerCase()] && !e.metaKey && !e.ctrlKey) { store.setTool(keyMap[e.key.toLowerCase()]); return; }
+      if (e.key.toLowerCase() === 'i' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); triggerImageUpload(store, (msg) => addToast(msg, 'info')); return; }
       if (e.shiftKey && e.key.toLowerCase() === 't') { e.preventDefault(); tplModal.openModal(); return; }
       if (e.key === 'Escape') { store.setSelected([]); store.setTool('select'); setRegionBox(null); setCmdOpen(false); setExportModalOpen(false); setShareOpen(false); return; }
       if (e.key === 'Delete' || e.key === 'Backspace') { store.deleteSelected(); return; }
