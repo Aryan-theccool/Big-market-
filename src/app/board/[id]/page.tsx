@@ -14,6 +14,7 @@ import { StatusBar } from '../../../components/ui/StatusBar';
 import { CanvasMiniMap } from '../../../components/canvas/CanvasMiniMap';
 import { CommandPalette } from '../../../components/ui/CommandPalette';
 import { RemoteCursors } from '../../../components/collab/RemoteCursors';
+import { SimulatedCursors } from '../../../components/collab/SimulatedCursors';
 import { TemplateModal, useTemplateModal } from '../../../components/ui/TemplateModal';
 import { useCollabSync } from '../../../hooks/useCollabSync';
 import { triggerImageUpload } from '../../../utils/imageHelper';
@@ -152,6 +153,8 @@ export default function BoardIdPage() {
 
   // Real-time collab
   useCollabSync(roomId);
+  // Simulated cursors — active only when no real remote users are connected
+  useCollabSimulation();
 
   // Template modal — shows once per board (per-board localStorage flag)
   const tplModal = useTemplateModal(roomId);
