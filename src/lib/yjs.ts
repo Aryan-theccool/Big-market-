@@ -27,8 +27,9 @@ export function getOrInitProvider(roomId: string, doc: Y.Doc): Promise<any> {
   const p = import('y-webrtc').then(({ WebrtcProvider }) =>
     new WebrtcProvider(roomId, doc, {
       signaling: [
+        'wss://signaling.yjs.dev',
         'wss://y-webrtc-signaling-eu.herokuapp.com',
-        'wss://y-webrtc-signaling-us.herokuapp.com'
+        'wss://y-webrtc-signaling-us.herokuapp.com',
       ]
     })
   );

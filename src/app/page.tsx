@@ -128,7 +128,7 @@ function Navbar() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999, height: 48,
-      background: 'rgba(255,255,255,0.8)',
+      background: 'var(--bg-panel)',
       backdropFilter: 'blur(20px) saturate(180%)',
       WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       borderBottom: `1px solid ${BORDER}`,
@@ -141,7 +141,7 @@ function Navbar() {
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
             </svg>
           </div>
-          <span style={{ fontFamily: FD, fontSize: 14, fontWeight: 600, color: '#1d1d1f', letterSpacing: '-0.2px' }}>Inkspace</span>
+          <span style={{ fontFamily: FD, fontSize: 14, fontWeight: 600, color: T1, letterSpacing: '-0.2px' }}>Inkspace</span>
         </a>
  
         <div className="hidden md:flex gap-6">

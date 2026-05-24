@@ -82,6 +82,7 @@ export const StickyNote: React.FC<ElementProps> = ({ element, isSelected, onPoin
         border: isSelected ? '2px solid #0071e3' : '1px solid rgba(28,25,23,0.08)',
         zIndex: element.z || 0,
         transition: 'box-shadow 0.15s, transform 0.15s',
+        overflow: 'hidden',
       }}
       onPointerDown={handlePointerDown}
     >
@@ -106,14 +107,19 @@ export const StickyNote: React.FC<ElementProps> = ({ element, isSelected, onPoin
         suppressContentEditableWarning
         onFocus={() => setIsEditing(true)}
         onBlur={handleBlur}
-        className="flex-1 px-3 py-2 focus:outline-none overflow-hidden select-text break-words"
+        className="px-3 py-2 focus:outline-none select-text break-words"
         style={{
           fontFamily: 'Caveat, cursive',
           fontSize: element.fontSize || 18,
           lineHeight: 1.4,
           color: 'rgba(28,25,23,0.85)',
-          minHeight: 'calc(100% - 28px)',
+          height: 'calc(100% - 28px)',
+          overflow: 'hidden',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          whiteSpace: 'pre-wrap',
           cursor: isEditing ? 'text' : 'inherit',
+          boxSizing: 'border-box',
         }}
       />
  
