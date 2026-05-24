@@ -5,6 +5,7 @@ import { useCanvasStore, CanvasElement } from '../../store/canvasStore';
 import { StickyNote, HandwritingText, TextElement, RoughShape, ImageElement, SelectionBox } from '../elements/CanvasElements';
 import { compressAndResizeImage } from '../../utils/imageHelper';
 import { useImageDrop } from '../../hooks/useImageDrop';
+import { getStroke } from 'perfect-freehand';
 
 const uid = () => 'el_' + Math.random().toString(36).slice(2, 9);
 
@@ -23,12 +24,91 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 }) => {
   const store = useCanvasStore();
   const worldRef = useRef<HTMLDivElement>(null);
+  
+  // High-performance freehand pencil drawing refs
+  const draftCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const activePointsRef = useRef<{ x: number; y: number }[]>([]);
+  const isDrawingRef = useRef<boolean>(false);
+  const rafIdRef = useRef<number | null>(null);
+  const strokeWidthRef = useRef<number>(3);
+
   const [spacePressed, setSpacePressed] = useState(false);
   const [lassoBox, setLassoBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const { isDragging: isDraggingFile, onDragEnter, onDragOver, onDragLeave, onDrop: handleDrop } = useImageDrop({ viewportRef, toast });
   const lassoStartRef = useRef<{ x: number; y: number } | null>(null);
   const dragRef = useRef<any>(null);
   const drawingRef = useRef<any>(null);
+  const [eraserCircle, setEraserCircle] = useState<{ x: number; y: number; radius: number } | null>(null);
+  const isErasingRef = useRef<boolean>(false);
+
+  // Dynamic screen to world coordinate mapping that reads the most current viewport state
+  const screenToWorldDynamic = (cx: number, cy: number) => {
+    const r = getBoardRect();
+    const state = useCanvasStore.getState();
+    return {
+      x: (cx - r.left - state.viewport.x) / state.viewport.zoom,
+      y: (cy - r.top - state.viewport.y) / state.viewport.zoom,
+    };
+  };
+
+  // Get current stroke color from CSS variables dynamically based on active theme
+  const getStrokeColor = () => {
+    if (typeof window === 'undefined') return '#000000';
+    const el = viewportRef.current;
+    if (!el) return '#000000';
+    const stroke = window.getComputedStyle(el).getPropertyValue('--rough-stroke').trim();
+    return stroke || '#000000';
+  };
+
+  // Dedicated RAF animation loop to draw the draft freehand preview
+  const drawDraftLoop = () => {
+    if (!isDrawingRef.current) return;
+
+    const canvas = draftCanvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Resize canvas to match the client viewport container dimensions dynamically if changed
+        if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
+          canvas.width = canvas.clientWidth;
+          canvas.height = canvas.clientHeight;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const points = activePointsRef.current;
+        if (points.length >= 2) {
+          const state = useCanvasStore.getState();
+          ctx.save();
+          ctx.translate(state.viewport.x, state.viewport.y);
+          ctx.scale(state.viewport.zoom, state.viewport.zoom);
+
+          const strokePoints = getStroke(
+            points.map((p) => [p.x, p.y]),
+            { size: strokeWidthRef.current * 2, smoothing: 0.5, thinning: 0.5, streamline: 0.5 }
+          );
+
+          if (strokePoints.length > 0) {
+            ctx.beginPath();
+            ctx.moveTo(strokePoints[0][0], strokePoints[0][1]);
+            for (let i = 1; i < strokePoints.length; i++) {
+              ctx.lineTo(strokePoints[i][0], strokePoints[i][1]);
+            }
+            ctx.closePath();
+
+            const strokeColor = getStrokeColor();
+            ctx.fillStyle = strokeColor;
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+      }
+    }
+
+    rafIdRef.current = requestAnimationFrame(drawDraftLoop);
+  };
+
 
 
   // Space bar for pan override
@@ -44,6 +124,184 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
+  }, []);
+
+  // Native pointer events for lag-free, high-performance drawing
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+
+    const onNativePointerDown = (e: PointerEvent) => {
+      const state = useCanvasStore.getState();
+      if (state.activeTool === 'eraser') {
+        e.preventDefault();
+        e.stopPropagation();
+        isErasingRef.current = true;
+        eraseAt(e.clientX, e.clientY);
+        return;
+      }
+      if (state.activeTool !== 'draw') return;
+
+      // Only left click, stylus, or touch is valid for drawing
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Clear selection first
+      state.setSelected([]);
+
+      isDrawingRef.current = true;
+      activePointsRef.current = [];
+
+      // Initialize canvas dimensions
+      const rect = el.getBoundingClientRect();
+      const canvas = draftCanvasRef.current;
+      if (canvas) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+
+      const pt = screenToWorldDynamic(e.clientX, e.clientY);
+      activePointsRef.current.push(pt);
+
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = requestAnimationFrame(drawDraftLoop);
+    };
+
+    const onNativePointerMove = (e: PointerEvent) => {
+      const state = useCanvasStore.getState();
+      if (state.activeTool === 'eraser') {
+        setEraserCircle({ x: e.clientX, y: e.clientY, radius: 24 });
+        if (isErasingRef.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          eraseAt(e.clientX, e.clientY);
+        }
+        return;
+      }
+      if (state.activeTool !== 'draw' || !isDrawingRef.current) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      let pts: { x: number; y: number }[] = [];
+      if (typeof (e as any).getCoalescedEvents === 'function') {
+        const coalesced = (e as any).getCoalescedEvents() as PointerEvent[];
+        for (const ev of coalesced) {
+          pts.push(screenToWorldDynamic(ev.clientX, ev.clientY));
+        }
+      }
+
+      if (pts.length === 0) {
+        pts.push(screenToWorldDynamic(e.clientX, e.clientY));
+      }
+
+      activePointsRef.current.push(...pts);
+    };
+
+    const onNativePointerUp = (e: PointerEvent) => {
+      const state = useCanvasStore.getState();
+      if (state.activeTool === 'eraser') {
+        e.preventDefault();
+        e.stopPropagation();
+        isErasingRef.current = false;
+        return;
+      }
+      if (state.activeTool !== 'draw' || !isDrawingRef.current) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      isDrawingRef.current = false;
+
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+
+      const canvas = draftCanvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      let pts: { x: number; y: number }[] = [];
+      if (typeof (e as any).getCoalescedEvents === 'function') {
+        const coalesced = (e as any).getCoalescedEvents() as PointerEvent[];
+        for (const ev of coalesced) {
+          pts.push(screenToWorldDynamic(ev.clientX, ev.clientY));
+        }
+      }
+
+      if (pts.length === 0) {
+        pts.push(screenToWorldDynamic(e.clientX, e.clientY));
+      }
+
+      activePointsRef.current.push(...pts);
+
+      const points = activePointsRef.current;
+      if (points.length >= 2) {
+        const xs = points.map((p) => p.x);
+        const ys = points.map((p) => p.y);
+        const minX = Math.min(...xs);
+        const minY = Math.min(...ys);
+
+        const newEl: CanvasElement = {
+          id: uid(),
+          type: 'draw',
+          x: minX,
+          y: minY,
+          z: Date.now() % 100000,
+          points: points,
+          stroke: 'var(--rough-stroke)',
+          strokeWidth: 3,
+        };
+
+        state.addElement(newEl);
+      }
+    };
+
+    const onNativePointerLeave = () => {
+      setEraserCircle(null);
+    };
+
+    el.addEventListener('pointerdown', onNativePointerDown, { passive: false });
+    el.addEventListener('pointermove', onNativePointerMove, { passive: false });
+    el.addEventListener('pointerup', onNativePointerUp, { passive: false });
+    el.addEventListener('pointercancel', onNativePointerUp, { passive: false });
+    el.addEventListener('pointerleave', onNativePointerLeave, { passive: true });
+
+    return () => {
+      el.removeEventListener('pointerdown', onNativePointerDown);
+      el.removeEventListener('pointermove', onNativePointerMove);
+      el.removeEventListener('pointerup', onNativePointerUp);
+      el.removeEventListener('pointercancel', onNativePointerUp);
+      el.removeEventListener('pointerleave', onNativePointerLeave);
+    };
+  }, [viewportRef]);
+
+  // Cancel active freehand drawing on pressing Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isDrawingRef.current) {
+        isDrawingRef.current = false;
+        if (rafIdRef.current) {
+          cancelAnimationFrame(rafIdRef.current);
+          rafIdRef.current = null;
+        }
+
+        const canvas = draftCanvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        activePointsRef.current = [];
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
   }, []);
 
 
@@ -133,6 +391,101 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   const intersects = (r1: any, r2: any) =>
     !(r2.x > r1.x + r1.w || r2.x + r2.w < r1.x || r2.y > r1.y + r1.h || r2.y + r2.h < r1.y);
 
+  const eraseAt = (clientX: number, clientY: number) => {
+    const pt = screenToWorldDynamic(clientX, clientY);
+    const eraseRadius = 24 / store.viewport.zoom;
+
+    store.setElements((prev) => {
+      let changed = false;
+      const nextElements: CanvasElement[] = [];
+
+      for (const el of prev) {
+        if (el.type === 'draw' && el.points) {
+          const originalLength = el.points.length;
+          const remainingPoints = el.points.filter((p) => {
+            const dist = Math.hypot(p.x - pt.x, p.y - pt.y);
+            return dist > eraseRadius;
+          });
+
+          if (remainingPoints.length < 2) {
+            changed = true;
+            continue;
+          }
+
+          if (remainingPoints.length < originalLength) {
+            changed = true;
+            
+            // Split points into contiguous segments
+            const segments: { x: number; y: number }[][] = [];
+            let currentSegment: { x: number; y: number }[] = [];
+
+            let lastKeptIndex = -1;
+            for (let i = 0; i < el.points.length; i++) {
+              const p = el.points[i];
+              const dist = Math.hypot(p.x - pt.x, p.y - pt.y);
+              const keep = dist > eraseRadius;
+
+              if (keep) {
+                if (lastKeptIndex !== -1 && i - lastKeptIndex > 1) {
+                  if (currentSegment.length >= 2) {
+                    segments.push(currentSegment);
+                  }
+                  currentSegment = [];
+                }
+                currentSegment.push(p);
+                lastKeptIndex = i;
+              }
+            }
+            if (currentSegment.length >= 2) {
+              segments.push(currentSegment);
+            }
+
+            if (segments.length === 0) {
+              continue;
+            }
+
+            segments.forEach((seg, idx) => {
+              const xs = seg.map((p) => p.x);
+              const ys = seg.map((p) => p.y);
+              const minX = Math.min(...xs);
+              const minY = Math.min(...ys);
+
+              nextElements.push({
+                ...el,
+                id: idx === 0 ? el.id : uid(),
+                x: minX,
+                y: minY,
+                points: seg,
+              });
+            });
+          } else {
+            nextElements.push(el);
+          }
+        } else {
+          const b = elementBounds(el);
+          const overlaps = !(
+            pt.x - eraseRadius > b.x + b.w ||
+            pt.x + eraseRadius < b.x ||
+            pt.y - eraseRadius > b.y + b.h ||
+            pt.y + eraseRadius < b.y
+          );
+
+          if (overlaps) {
+            changed = true;
+          } else {
+            nextElements.push(el);
+          }
+        }
+      }
+
+      if (changed) {
+        setTimeout(() => store.saveToStorage(), 0);
+        return nextElements;
+      }
+      return prev;
+    });
+  };
+
   // ── Wheel Zoom ──────────────────────────────────────────────
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -147,6 +500,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 
   // ── Pointer Down ─────────────────────────────────────────────
   const handlePointerDown = (e: React.MouseEvent) => {
+    if (store.activeTool === 'draw') return;
     if (e.button === 1 || store.activeTool === 'hand' || spacePressed) {
       dragRef.current = { kind: 'pan', sx: e.clientX, sy: e.clientY, vx: store.viewport.x, vy: store.viewport.y };
       return;
@@ -272,6 +626,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 
   // ── Pointer Move ─────────────────────────────────────────────
   const handlePointerMove = (e: React.MouseEvent) => {
+    if (store.activeTool === 'draw') return;
     if (dragRef.current) {
       const d = dragRef.current;
       if (d.kind === 'pan') {
@@ -290,6 +645,15 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
             next.x = orig.x + dx; next.y = orig.y + dy;
             if (orig.x2 !== undefined) next.x2 = orig.x2 + dx;
             if (orig.y2 !== undefined) next.y2 = orig.y2 + dy;
+          } else if (el.type === 'draw') {
+            next.x = orig.x + dx;
+            next.y = orig.y + dy;
+            if (orig.points) {
+              next.points = orig.points.map((p: any) => ({
+                x: p.x + dx,
+                y: p.y + dy
+              }));
+            }
           } else {
             next.x = store.snap ? Math.round((orig.x + dx) / 24) * 24 : orig.x + dx;
             next.y = store.snap ? Math.round((orig.y + dy) / 24) * 24 : orig.y + dy;
@@ -358,6 +722,10 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
                 y: ny + relY * scaleY,
               };
             });
+            if (next.points.length) {
+              next.x = Math.min(...next.points.map((p: any) => p.x));
+              next.y = Math.min(...next.points.map((p: any) => p.y));
+            }
           }
 
           return next;
@@ -420,6 +788,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 
   // ── Pointer Up ───────────────────────────────────────────────
   const handlePointerUp = () => {
+    if (store.activeTool === 'draw') return;
     dragRef.current = null;
 
     if (drawingRef.current) {
@@ -466,23 +835,31 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     e.stopPropagation();
     if (store.activeTool === 'hand' || spacePressed) return;
 
+    let nextSelected = store.selected;
     if (e.shiftKey) {
-      store.setSelected(
-        store.selected.includes(el.id)
-          ? store.selected.filter((id) => id !== el.id)
-          : [...store.selected, el.id]
-      );
+      nextSelected = store.selected.includes(el.id)
+        ? store.selected.filter((id) => id !== el.id)
+        : [...store.selected, el.id];
+      store.setSelected(nextSelected);
     } else if (!store.selected.includes(el.id)) {
-      store.setSelected([el.id]);
+      nextSelected = [el.id];
+      store.setSelected(nextSelected);
     }
 
-    store.pushHistory();
     const pt = screenToWorld(e.clientX, e.clientY);
-    const selEls = store.selected.map((id) => store.elements.find((x) => x.id === id)).filter(Boolean) as CanvasElement[];
+    const selEls = nextSelected.map((id) => store.elements.find((x) => x.id === id)).filter(Boolean) as CanvasElement[];
     dragRef.current = {
       kind: 'move', start: pt,
-      originals: selEls.map((x) => ({ id: x.id, x: x.x, y: x.y, x2: x.x2, y2: x.y2 })),
+      originals: selEls.map((x) => ({
+        id: x.id,
+        x: x.x,
+        y: x.y,
+        x2: x.x2,
+        y2: x.y2,
+        points: x.points ? x.points.map((p) => ({ ...p })) : undefined,
+      })),
     };
+    store.pushHistory();
   };
 
   const handleResizeStart = (handle: string, e: React.PointerEvent) => {
@@ -547,6 +924,8 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       style={{
         cursor: store.activeTool === 'hand' || spacePressed
           ? 'grab'
+          : store.activeTool === 'eraser'
+          ? 'none'
           : store.activeTool === 'handwriting'
           ? 'text'
           : isDrawingTool ? 'crosshair' : 'default',
@@ -613,6 +992,13 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
 
       </div>
 
+      {/* Draft freehand canvas layer */}
+      <canvas
+        ref={draftCanvasRef}
+        className="draft-freehand-canvas absolute inset-0 pointer-events-none z-[45]"
+        style={{ width: '100%', height: '100%' }}
+      />
+
       {/* Lasso overlay */}
       {lassoBox && (
         <div
@@ -665,6 +1051,22 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
             {Math.round(regionBox.w)} × {Math.round(regionBox.h)} px
           </div>
         </div>
+      )}
+
+      {/* Floating dynamic eraser cursor preview */}
+      {store.activeTool === 'eraser' && eraserCircle && (
+        <div
+          className="fixed pointer-events-none z-[100000] rounded-full border bg-background/25 backdrop-blur-[0.5px] -translate-x-1/2 -translate-y-1/2"
+          style={{
+            left: eraserCircle.x,
+            top: eraserCircle.y,
+            width: eraserCircle.radius * 2,
+            height: eraserCircle.radius * 2,
+            borderColor: 'var(--accent)',
+            boxShadow: '0 0 10px rgba(99,102,241,0.15)',
+            background: 'rgba(99,102,241,0.12)',
+          }}
+        />
       )}
     </div>
   );
