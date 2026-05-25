@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="public/favicon.ico" alt="Inkspace Logo" width="100" height="100" />
-  <h1>✨ Inkspace</h1>
+  <h1 style="font-size: 3rem;">✨ Inkspace</h1>
   <p><strong>Your thoughts, unfiltered. The infinite-canvas visual workspace.</strong></p>
   
   <p>
@@ -18,8 +17,9 @@
 <br/>
 
 <div align="center">
-  <!-- Placeholder for Hero Banner/GIF -->
-  <img src="https://via.placeholder.com/1200x600/09090b/ffffff?text=Inkspace+Hero+GIF+goes+here" alt="Inkspace Demo" />
+  <a href="https://task-eight-psi-64.vercel.app/">
+    <img src="inkspace-1779525212086.png" alt="Inkspace Demo" width="800" />
+  </a>
 </div>
 
 <br/>
@@ -117,7 +117,7 @@ npm run dev
 ```
 
 ### 5. Start Brainstorming
-Open [http://localhost:3000](http://localhost:3000) in your browser. Create a new board, pick a template, and invite a friend!
+Open [https://task-eight-psi-64.vercel.app/](https://task-eight-psi-64.vercel.app/) in your browser (or localhost if running locally). Create a new board, pick a template, and invite a friend!
 
 ---
 
