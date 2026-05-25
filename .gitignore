@@ -3,3 +3,4 @@ node_modules
 IMPLEMENTATION_CHECKLIST.md
 WHITEBOARD_UI_DESIGN_PLAN_V3.md
 .vercel
+.env*

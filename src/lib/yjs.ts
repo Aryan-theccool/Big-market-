@@ -15,9 +15,9 @@ const rooms = new Map<string, { doc: Y.Doc; yElements: Y.Map<any> }>();
 // for the same room — this is what prevents the "already exists" error
 const providerPromises = new Map<string, Promise<any>>();
 
-// Initialize Liveblocks client with the provided Public API key
+// Initialize Liveblocks client with the Public API key from environment variables
 const client = createClient({
-  publicApiKey: "pk_dev_Mx933cYAI6kOSZ4-Y8gyLjnpP7-4BON_LKDjqSUAjrl9ZS27tTU6gVijhPvPLB5d",
+  publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY as string,
 });
 
 export function getYRoom(roomId: string) {
