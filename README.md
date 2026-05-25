@@ -1,82 +1,128 @@
 <div align="center">
-  <img src="public/favicon.ico" alt="Logo" width="80" height="80">
-  <h1 align="center">Inkspace (formerly Canvex)</h1>
-  <p align="center">
-    <strong>Your thoughts, unfiltered. A premium, real-time collaborative infinite canvas.</strong>
+  <img src="public/favicon.ico" alt="Inkspace Logo" width="100" height="100" />
+  <h1>✨ Inkspace</h1>
+  <p><strong>Your thoughts, unfiltered. The infinite-canvas visual workspace.</strong></p>
+  
+  <p>
+    Inkspace is a beautiful, modern, infinite-canvas collaboration tool designed to help you drag, drop, connect, and brainstorm at the speed of thought. Whether you're mapping out complex AWS architectures or sketching a weekend startup idea, Inkspace gives you the boundless room you need to create.
   </p>
-  <p align="center">
-    <a href="https://task-eight-psi-64.vercel.app/">Live Demo</a>
-    ·
-    <a href="#features">Features</a>
-    ·
-    <a href="#getting-started">Getting Started</a>
+
+  <p>
+    <a href="#-features--templates">Features</a> •
+    <a href="#-getting-started">Getting Started</a> •
+    <a href="#-tech-stack">Tech Stack</a> •
+    <a href="#-project-architecture">Architecture</a>
   </p>
 </div>
 
-<br />
+<br/>
 
-![Inkspace Landing Page](https://task-eight-psi-64.vercel.app/api/og?title=Inkspace) 
-*(Note: Add an actual screenshot of the app here later!)*
+<div align="center">
+  <!-- Placeholder for Hero Banner/GIF -->
+  <img src="https://via.placeholder.com/1200x600/09090b/ffffff?text=Inkspace+Hero+GIF+goes+here" alt="Inkspace Demo" />
+</div>
+
+<br/>
+
+> *"The best ideas don't fit in a linear document. They need space to breathe, connect, and evolve."* 
+
+Inkspace blends a premium, floating **glassmorphic UI** with a mesmerizing **infinite dot-grid background**, making every interaction feel buttery smooth and incredibly satisfying.
 
 ---
 
-## ⚡ Overview
+## 🚀 Features & Templates
 
-**Inkspace** is a modern, high-performance collaborative whiteboard application inspired by tools like Freeform and Excalidraw, but built with a focus on premium aesthetics and smooth interactions. Whether you're brainstorming a new architecture, sketching wireframes, or just dropping sticky notes with your team, Inkspace gives your ideas the infinite space they deserve.
+Inkspace comes loaded with out-of-the-box superpowers and expertly crafted templates designed for specific workflows. Say goodbye to starting from a blank page.
 
-## ✨ Features
+- **♾️ Infinite Drag-and-Drop Canvas:** Pan, zoom, and place nodes effortlessly on a GPU-accelerated canvas.
+- **⚡ Real-Time Collaboration:** Powered by Liveblocks and Yjs. See your teammates' cursors fly across the screen instantly.
+- **🌗 Seamless Dark Mode:** Flawless light/dark mode transitions that update the canvas and UI without a page reload.
 
-- **🌐 Real-Time Collaboration:** Powered by **Liveblocks** and **Yjs**, allowing multiple users to draw, move shapes, and see live cursors instantly across the globe.
-- **♾️ Infinite Canvas:** Pan and zoom effortlessly across an unbounded workspace.
-- **🎨 Beautiful Aesthetics:** Features a meticulously crafted, Apple-inspired UI with glassmorphism, dynamic shadows, and smooth micro-animations.
-- **🌙 Deep Dark Mode:** First-class dark mode support that flawlessly transitions the entire canvas and UI without a page reload.
-- **✍️ Sticky Notes & Typography:** Includes the `Caveat` handwriting font for a natural, organic feel when brainstorming.
-- **⚡ Lightning Fast:** Built on Next.js 14 and raw DOM manipulations for a buttery smooth 60fps drawing experience.
+### 🎨 The 6 Starter Templates
+1. **☁️ System Design:** AWS-style architecture diagrams with beautifully routed node connections for mapping out infrastructure.
+2. **🗺️ Product Roadmap:** Kanban-style swimlanes perfect for Q1/Q2/Q3 planning and tracking deliverables.
+3. **💡 Brainstorming:** Rotated, vibrant sticky notes connecting to a central idea using handwriting typography for an organic feel.
+4. **🌳 DSA Flowchart:** A clean Binary Search Tree visualizer to map out algorithms and complex logic flows.
+5. **🚀 Startup Planning:** A Lean Canvas grid template designed specifically for founders to validate ideas quickly.
+6. **🤖 AI Workflow:** A sleek, dark-mode node builder specialized for chaining LLMs (Claude/GPT-4) and vector databases.
+
+---
+
+## 📂 Project Architecture
+
+Inkspace is beautifully organized using the Next.js App Router paradigm. Here is a high-level look at the codebase (`Treeify` structure):
+
+```text
+src/
+├── app/                       # Next.js 14 App Router
+│   ├── board/[id]/            # Dynamic canvas workspace pages
+│   ├── boards/                # Dashboard to manage existing boards
+│   ├── layout.tsx             # Root layout & providers
+│   └── page.tsx               # Stunning landing page
+├── components/                # Modular React components
+│   ├── canvas/                # Core WebGL/DOM canvas, panning, zooming
+│   ├── collab/                # Real-time remote & simulated cursors
+│   ├── elements/              # Renderers for shapes, text, and sticky notes
+│   └── ui/                    # Glassmorphic panels, modals, and toolbars
+│       ├── TemplateModal.tsx  # The 6-template gallery modal
+│       └── CommandPalette.tsx # ⌘K fast-action menu
+├── hooks/                     # Custom React hooks (useCollabSync, useImageDrop)
+├── lib/                       # External library integrations (Yjs, Liveblocks)
+├── store/                     # Zustand state management (Canvas, Boards, Collab)
+├── styles/                    # Tailwind directives & CSS Variables (Dark mode)
+└── utils/                     # Helpers (image processing, math)
+```
+
+---
 
 ## 🛠 Tech Stack
 
-- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) + Custom CSS Variables
+Built with the modern web in mind. Fast, scalable, and fully typed.
+
+- **Frontend Framework:** [Next.js 14](https://nextjs.org/) (App Router)
+- **UI & Styling:** [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
 - **State Management:** [Zustand](https://github.com/pmndrs/zustand)
-- **Real-Time Engine:** [Liveblocks](https://liveblocks.io/) + [Yjs](https://docs.yjs.dev/)
+- **Collaboration Engine:** [Liveblocks](https://liveblocks.io/) + [Yjs](https://docs.yjs.dev/)
+- **Typography:** `Inter` (UI) and `Caveat` (Sticky Notes)
 - **Deployment:** [Vercel](https://vercel.com/)
 
 ---
 
-## 🚀 Getting Started
+## 🏁 Getting Started
 
-### Prerequisites
+Ready to spin up your own collaborative canvas? It takes less than two minutes.
 
-Make sure you have Node.js (v18+) installed.
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/inkspace.git
+cd inkspace
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Aryan-theccool/Big-market-.git
-   cd Big-market-
-   ```
+### 2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 3. Configure Liveblocks (Optional but recommended)
+To enable true real-time collaboration:
+1. Go to [Liveblocks.io](https://liveblocks.io/) and create a free account.
+2. Get your **Public API Key**.
+3. Open `src/lib/yjs.ts` and replace the placeholder `publicApiKey` with your key.
 
-3. **Set up Liveblocks API Key:**
-   To enable real-time collaboration locally, ensure you have a free [Liveblocks](https://liveblocks.io/) account. Replace the `publicApiKey` in `src/lib/yjs.ts` with your own key, or use the provided test key.
+### 4. Fire up the Dev Server
+```bash
+npm run dev
+```
 
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open the app:**
-   Navigate to [http://localhost:3000](http://localhost:3000) in your browser to start creating.
+### 5. Start Brainstorming
+Open [http://localhost:3000](http://localhost:3000) in your browser. Create a new board, pick a template, and invite a friend!
 
 ---
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](../../issues).
-
-## 📄 License
-
-This project is licensed under the MIT License.
+<div align="center">
+  <b>Built with ❤️ by thinkers, for thinkers.</b><br/>
+  <a href="https://github.com/your-username/inkspace/issues">Report a Bug</a> • 
+  <a href="https://github.com/your-username/inkspace/pulls">Request a Feature</a>
+</div>
