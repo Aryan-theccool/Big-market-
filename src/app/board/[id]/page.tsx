@@ -14,8 +14,13 @@ import { StatusBar } from '../../../components/ui/StatusBar';
 import { CanvasMiniMap } from '../../../components/canvas/CanvasMiniMap';
 import { CommandPalette } from '../../../components/ui/CommandPalette';
 import { RemoteCursors } from '../../../components/collab/RemoteCursors';
+import { SimulatedCursors } from '../../../components/collab/SimulatedCursors';
 import { TemplateModal, useTemplateModal } from '../../../components/ui/TemplateModal';
 import { useCollabSync } from '../../../hooks/useCollabSync';
+import { useCollabSimulation } from '../../../hooks/useCollabSimulation';
+import { SplitScreenLayout } from '../../../components/editor/SplitScreenLayout';
+import { useEditorStore } from '../../../store/editorStore';
+import { DiagramPanel } from '../../../components/ui/DiagramPanel';
 import { triggerImageUpload } from '../../../utils/imageHelper';
 
 interface Toast { id: string; message: string; type: 'info' | 'success' | 'error' | 'warning'; }
@@ -149,9 +154,14 @@ export default function BoardIdPage() {
   const [exportFormat, setExportFormat] = useState<'png' | 'jpeg'>('png');
   const [isExporting, setIsExporting] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [diagramOpen, setDiagramOpen] = useState(false);
 
   // Real-time collab
   useCollabSync(roomId);
+  // Simulated cursors when alone
+  useCollabSimulation();
+
+  const { splitMode } = useEditorStore();
 
   // Template modal — shows once per board (per-board localStorage flag)
   const tplModal = useTemplateModal(roomId);
@@ -299,23 +309,32 @@ export default function BoardIdPage() {
         All Boards
       </button>
 
-      {/* Canvas */}
-      <div className="absolute inset-0 top-[52px]" style={{ bottom: 0 }}>
-        <CanvasViewport viewportRef={viewportRef} regionStart={regionStart} setRegionStart={setRegionStart} regionBox={regionBox} setRegionBox={setRegionBox} toast={addToast} />
-      </div>
+      {/* Split-screen layout — wraps canvas pane and editor pane */}
+      <SplitScreenLayout
+        roomId={roomId}
+        canvasSlot={
+          <div className="absolute inset-0">
+            <CanvasViewport viewportRef={viewportRef} regionStart={regionStart} setRegionStart={setRegionStart} regionBox={regionBox} setRegionBox={setRegionBox} toast={addToast} />
+          </div>
+        }
+      />
 
-      {/* Left tool rail */}
-      <div className="absolute inset-0 top-[52px] pointer-events-none">
-        <div className="pointer-events-auto"><LeftToolRail onOpenTemplates={tplModal.openModal} /></div>
-      </div>
+      {/* Left tool rail — only in canvas / split modes */}
+      {splitMode !== 'editor' && (
+        <div className="absolute inset-0 top-[52px] pointer-events-none">
+          <div className="pointer-events-auto"><LeftToolRail onOpenTemplates={tplModal.openModal} /></div>
+        </div>
+      )}
 
       {/* Mobile toolbar */}
       <MobileToolbar />
 
-      {/* Inspector */}
-      <div className="absolute top-[52px] right-0 bottom-[32px]" style={{ pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto' }}><InspectorPanel /></div>
-      </div>
+      {/* Inspector — only in canvas / split modes */}
+      {splitMode !== 'editor' && (
+        <div className="absolute top-[52px] right-0 bottom-[32px]" style={{ pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto' }}><InspectorPanel /></div>
+        </div>
+      )}
 
       {/* Status bar */}
       <StatusBar viewportWidth={vpSize.w} viewportHeight={vpSize.h} />
@@ -329,6 +348,8 @@ export default function BoardIdPage() {
 
       {/* Remote collab cursors */}
       <RemoteCursors />
+      {/* Simulated cursors (shown when no real remote users connected) */}
+      <SimulatedCursors />
 
       {/* Command palette */}
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} toast={addToast} viewportWidth={vpSize.w} viewportHeight={vpSize.h} />
