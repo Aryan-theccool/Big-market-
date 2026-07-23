@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useCollabStore } from '../../store/collabStore';
+import { useEditorStore } from '../../store/editorStore';
 import { compressAndResizeImage } from '../../utils/imageHelper';
 
 interface HeaderProps {
@@ -53,6 +54,7 @@ function initials(name: string) {
 export const Header: React.FC<HeaderProps> = ({ toast, onOpenHelp, onExport, onShare, viewportRef }) => {
   const store = useCanvasStore();
   const { remoteUsers } = useCollabStore();
+  const { splitMode, setSplitMode } = useEditorStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportJSON = () => {
@@ -171,6 +173,59 @@ export const Header: React.FC<HeaderProps> = ({ toast, onOpenHelp, onExport, onS
           <ShareIcon />
           Share
         </button>
+
+        <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+
+        {/* Split-screen mode toggle */}
+        <div
+          className="hidden md:flex items-center gap-0.5 rounded-[10px] p-0.5"
+          style={{ background: 'var(--bg-secondary)', border: '0.5px solid var(--border)' }}
+          title="Layout mode"
+        >
+          {([
+            {
+              id: 'editor', title: 'Notes only',
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              ),
+            },
+            {
+              id: 'split', title: 'Split: Notes + Canvas',
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <rect x="2" y="3" width="20" height="18" rx="2"/>
+                  <line x1="12" y1="3" x2="12" y2="21"/>
+                </svg>
+              ),
+            },
+            {
+              id: 'canvas', title: 'Canvas only',
+              icon: (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <rect x="2" y="3" width="20" height="18" rx="2"/>
+                  <path d="M8 10l3 3 5-5"/>
+                </svg>
+              ),
+            },
+          ] as const).map(({ id, title, icon }) => (
+            <button
+              key={id}
+              onClick={() => setSplitMode(id)}
+              title={title}
+              className="flex items-center justify-center rounded-[8px] transition-all"
+              style={{
+                width: 28, height: 26, border: 'none', cursor: 'pointer',
+                background: splitMode === id ? 'var(--accent)' : 'transparent',
+                color: splitMode === id ? 'white' : 'var(--text-secondary)',
+              }}
+            >
+              {icon}
+            </button>
+          ))}
+        </div>
 
         <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
 

@@ -22,9 +22,10 @@ const TOOLS = [
 
 interface LeftToolRailProps {
   onOpenTemplates?: () => void;
+  onOpenDiagram?: () => void;
 }
 
-export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates }) => {
+export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates, onOpenDiagram }) => {
   const store = useCanvasStore();
   const activeTool = store.activeTool;
 
@@ -108,6 +109,32 @@ export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates }) =
             style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-lg)', border: '0.5px solid var(--border)' }}>
             <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}>Templates</span>
             <kbd style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-secondary)', border: '0.5px solid var(--border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'var(--font-mono)' }}>⇧T</kbd>
+          </div>
+        </div>
+      )}
+
+      {/* Diagram-as-Code */}
+      {onOpenDiagram && (
+        <div className="relative group">
+          <button
+            onClick={onOpenDiagram}
+            title="Diagram-as-Code  ⇧D"
+            className="flex items-center justify-center rounded-[10px] transition-all active:scale-95"
+            style={{ width: 36, height: 36, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="6" height="6" rx="1"/>
+              <rect x="15" y="3" width="6" height="6" rx="1"/>
+              <rect x="9" y="15" width="6" height="6" rx="1"/>
+              <path d="M6 9v3a3 3 0 003 3h6a3 3 0 003-3V9"/>
+            </svg>
+          </button>
+          <div className="pointer-events-none absolute left-full ml-2.5 top-1/2 -translate-y-1/2 flex items-center gap-2 rounded-[8px] px-2.5 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-100 whitespace-nowrap z-50"
+            style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-lg)', border: '0.5px solid var(--border)' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}>Diagram-as-Code</span>
+            <kbd style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-secondary)', border: '0.5px solid var(--border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'var(--font-mono)' }}>⇧D</kbd>
           </div>
         </div>
       )}
