@@ -226,7 +226,8 @@ export default function BoardIdPage() {
       if (keyMap[e.key.toLowerCase()] && !e.metaKey && !e.ctrlKey) { store.setTool(keyMap[e.key.toLowerCase()]); return; }
       if (e.key.toLowerCase() === 'i' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); triggerImageUpload(store, (msg) => addToast(msg, 'info')); return; }
       if (e.shiftKey && e.key.toLowerCase() === 't') { e.preventDefault(); tplModal.openModal(); return; }
-      if (e.key === 'Escape') { store.setSelected([]); store.setTool('select'); setRegionBox(null); setCmdOpen(false); setExportModalOpen(false); setShareOpen(false); return; }
+      if (e.shiftKey && e.key.toLowerCase() === 'd') { e.preventDefault(); setDiagramOpen((p) => !p); return; }
+      if (e.key === 'Escape') { store.setSelected([]); store.setTool('select'); setRegionBox(null); setCmdOpen(false); setExportModalOpen(false); setShareOpen(false); setDiagramOpen(false); return; }
       if (e.key === 'Delete' || e.key === 'Backspace') { store.deleteSelected(); return; }
       if (e.key === 'g') { store.toggleGrid(); return; }
       if (e.key === 'm') { store.toggleMini(); return; }
@@ -322,7 +323,7 @@ export default function BoardIdPage() {
       {/* Left tool rail — only in canvas / split modes */}
       {splitMode !== 'editor' && (
         <div className="absolute inset-0 top-[52px] pointer-events-none">
-          <div className="pointer-events-auto"><LeftToolRail onOpenTemplates={tplModal.openModal} /></div>
+          <div className="pointer-events-auto"><LeftToolRail onOpenTemplates={tplModal.openModal} onOpenDiagram={() => setDiagramOpen(true)} /></div>
         </div>
       )}
 
@@ -357,6 +358,11 @@ export default function BoardIdPage() {
       {/* Template modal */}
       <AnimatePresence>
         {tplModal.open && <TemplateModal onClose={tplModal.close} />}
+      </AnimatePresence>
+
+      {/* Diagram-as-Code panel */}
+      <AnimatePresence>
+        {diagramOpen && <DiagramPanel onClose={() => setDiagramOpen(false)} />}
       </AnimatePresence>
 
       {/* Share modal */}
