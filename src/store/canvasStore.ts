@@ -2,7 +2,16 @@ import { create } from 'zustand';
 
 export type ElementType =
   | 'note' | 'rect' | 'circle' | 'line' | 'arrow'
-  | 'draw' | 'text' | 'handwriting' | 'frame' | 'image';
+  | 'draw' | 'text' | 'handwriting' | 'frame' | 'image'
+  | 'cloud-shape' | 'schema';
+
+export interface SchemaField {
+  name: string;
+  type: string;
+  isPrimary?: boolean;
+  isForeign?: boolean;
+  nullable?: boolean;
+}
 
 export interface CanvasElement {
   id: string;
@@ -35,6 +44,11 @@ export interface CanvasElement {
   bold?: boolean;
   italic?: boolean;
   _typing?: boolean;
+  // Cloud / engineering shape
+  shapeId?: string;          // e.g. 'aws-ec2', 'gcp-bigquery', 'k8s-pod'
+  // Database schema grid
+  schemaName?: string;
+  schemaFields?: SchemaField[];
 }
 
 export interface Viewport {
