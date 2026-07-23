@@ -9,7 +9,7 @@ export type AwarenessUser = {
 };
 
 // Singleton Y.Doc per room — survives hot-reload and StrictMode double-mount
-const rooms = new Map<string, { doc: Y.Doc; yElements: Y.Map<any> }>();
+const rooms = new Map<string, { doc: Y.Doc; yElements: Y.Map<any>; yText: Y.XmlFragment }>();
 
 // Cache the Promise itself so concurrent calls never create two providers
 // for the same room — this is what prevents the "already exists" error
@@ -24,7 +24,8 @@ export function getYRoom(roomId: string) {
   if (rooms.has(roomId)) return rooms.get(roomId)!;
   const doc = new Y.Doc();
   const yElements = doc.getMap<any>('elements');
-  rooms.set(roomId, { doc, yElements });
+  const yText = doc.getXmlFragment('markdown-doc');
+  rooms.set(roomId, { doc, yElements, yText });
   return rooms.get(roomId)!;
 }
 
