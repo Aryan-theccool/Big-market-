@@ -35,15 +35,12 @@ export function useCollabSync(roomId: string) {
       yElements.forEach((val: CanvasElement) => els.push(val));
       els.sort((a, b) => (a.z || 0) - (b.z || 0));
 
-      // Temporarily block writeback while setting the remote state
+      // Set suppress synchronously — no setTimeout needed since
+      // the writeback effect runs after this observe callback finishes
       suppressRef.current = true;
       lastSyncRef.current = JSON.stringify(els);
       canvasStore.setElements(els);
-      
-      // Allow writeback again after React render finishes
-      setTimeout(() => {
-        suppressRef.current = false;
-      }, 50);
+      suppressRef.current = false;
     };
     yElements.observe(observe);
 
