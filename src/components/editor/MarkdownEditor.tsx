@@ -158,8 +158,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ roomId }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        // Disable history — Collaboration handles it via Y.js
-        history: false,
+        // History is not included in v3 when using Collaboration
       }),
       Underline,
       Highlight.configure({ multicolor: false }),

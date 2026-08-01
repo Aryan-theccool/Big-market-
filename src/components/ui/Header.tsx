@@ -33,7 +33,7 @@ function MoonIcon() {
 
 function LogoIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
     </svg>
   );
@@ -103,8 +103,19 @@ export const Header: React.FC<HeaderProps> = ({ toast, onOpenHelp, onExport, onS
   return (
     <header
       id="header-bar"
-      className="fixed top-0 left-0 right-0 z-[9500] flex items-center justify-between px-4 glass-panel"
-      style={{ height: 52, borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderBottom: '0.5px solid var(--border)' }}
+      className="fixed top-0 left-0 right-0 z-[9500] flex items-center justify-between px-4"
+      style={{
+        height: 52,
+        borderRadius: 0,
+        borderTop: 'none',
+        borderLeft: 'none',
+        borderRight: 'none',
+        borderBottom: '0.5px solid var(--border)',
+        background: 'var(--bg-surface)',
+        backdropFilter: 'var(--blur-panel)',
+        WebkitBackdropFilter: 'var(--blur-panel)',
+        border: '0.5px solid var(--border)',
+      }}
     >
       {/* Left: Logo + board name */}
       <div className="flex items-center gap-2.5 min-w-0">
