@@ -1,0 +1,99 @@
+================================================================================
+                    RENDER DEPLOYMENT - FIX & REDEPLOY
+================================================================================
+
+I've fixed the build configuration. The issue was that Render was trying to
+run "npm run build" (Next.js build) when it should just start the Node server.
+
+✅ WHAT I FIXED:
+    • Updated render.yaml to skip Next.js build
+    • Moved build dependencies to main dependencies
+    • Created .renderignore to skip Next.js files
+    • Committed all changes to GitHub
+
+================================================================================
+                        WHAT TO DO NOW
+================================================================================
+
+OPTION 1: REDEPLOY (Recommended)
+    
+    1. Go to: https://dashboard.render.com
+    
+    2. Find your service: "inkspace-backend"
+    
+    3. Click: "Manual Deploy" or "Redeploy" button
+    
+    4. Wait 2-3 minutes for it to deploy
+    
+    5. Check if it's "Live" (green status)
+
+OPTION 2: DELETE AND REDEPLOY
+
+    1. Go to: https://dashboard.render.com
+    
+    2. Select: "inkspace-backend" service
+    
+    3. Click: Settings → Danger Zone → Delete Service
+    
+    4. Follow DEPLOY_BACKEND_NOW.txt again (same 11 steps)
+    
+    5. Deploy fresh
+
+================================================================================
+                        AFTER REDEPLOY
+================================================================================
+
+Once it shows "Live" (green):
+
+1. Copy your backend URL:
+   https://your-service-name.onrender.com
+
+2. Go to: https://vercel.com/dashboard
+
+3. Select: "task" project
+
+4. Settings → Environment Variables
+
+5. Add/Update:
+   NEXT_PUBLIC_API_URL = https://your-service-name.onrender.com
+   NEXT_PUBLIC_WEBSOCKET_URL = wss://your-service-name.onrender.com
+   NODE_ENV = production
+
+6. Click Save → Vercel auto-redeploys
+
+7. Test:
+   - Go to your app
+   - Create a board
+   - Open in 2 tabs
+   - Draw in one → appears in other instantly ✅
+
+================================================================================
+                        STATUS
+================================================================================
+
+✅ Fixed: Build configuration
+✅ Updated: render.yaml
+✅ Updated: package.json
+✅ Committed: All changes to GitHub
+
+⏳ Next: Redeploy on Render (1-2 minutes)
+
+================================================================================
+                        QUICK REFERENCE
+================================================================================
+
+Files changed:
+    • render.yaml ........... Build command updated
+    • package.json ......... Build deps moved
+    • .renderignore ........ New file to skip Next.js
+
+Latest commit: 7d6d702
+Push status: ✅ Up to date on GitHub
+
+================================================================================
+
+NEXT STEP: Go to https://dashboard.render.com and click "Manual Deploy"
+
+The backend will deploy successfully this time! 🚀
+
+================================================================================
