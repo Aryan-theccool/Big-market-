@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: inkspace-backend
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+    routes:
+      - path: /
+        matchType: prefix
+
+# Health check configuration
+healthCheck:
+  path: /
+  interval: 60
+  timeout: 30
+  startFailureThreshold: 5
+  startSuccessThreshold: 1
+  failureThreshold: 5
+
+# Auto-deploy on push to main branch
+autoDeploy: true
