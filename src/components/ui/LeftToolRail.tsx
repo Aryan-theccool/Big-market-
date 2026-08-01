@@ -23,9 +23,10 @@ const TOOLS = [
 interface LeftToolRailProps {
   onOpenTemplates?: () => void;
   onOpenDiagram?: () => void;
+  onOpenShapes?: () => void;
 }
 
-export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates, onOpenDiagram }) => {
+export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates, onOpenDiagram, onOpenShapes }) => {
   const store = useCanvasStore();
   const activeTool = store.activeTool;
 
@@ -135,6 +136,29 @@ export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates, onO
             style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-lg)', border: '0.5px solid var(--border)' }}>
             <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}>Diagram-as-Code</span>
             <kbd style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-secondary)', border: '0.5px solid var(--border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'var(--font-mono)' }}>⇧D</kbd>
+          </div>
+        </div>
+      )}
+
+      {/* Cloud Shapes Library */}
+      {onOpenShapes && (
+        <div className="relative group">
+          <button
+            onClick={onOpenShapes}
+            title="Cloud Shapes  ⇧S"
+            className="flex items-center justify-center rounded-[10px] transition-all active:scale-95"
+            style={{ width: 36, height: 36, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+            </svg>
+          </button>
+          <div className="pointer-events-none absolute left-full ml-2.5 top-1/2 -translate-y-1/2 flex items-center gap-2 rounded-[8px] px-2.5 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-100 whitespace-nowrap z-50"
+            style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-lg)', border: '0.5px solid var(--border)' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}>Cloud Shapes</span>
+            <kbd style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-secondary)', border: '0.5px solid var(--border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'var(--font-mono)' }}>⇧S</kbd>
           </div>
         </div>
       )}
