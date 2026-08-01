@@ -318,3 +318,61 @@ const GenericClientIcon: CloudShapeDef['Icon'] = ({ width = 48, height = 48 }) =
     <rect x="18" y="48" width="28" height="2" rx="1" fill="#607D8B" opacity="0.3"/>
   </BaseIcon>
 );
+
+
+/* ══════════════════════════════════════════════════════════════
+   SHAPE REGISTRY — Master list
+══════════════════════════════════════════════════════════════ */
+
+export const CLOUD_SHAPES: CloudShapeDef[] = [
+  // AWS
+  { id: 'aws-ec2', label: 'EC2 Instance', provider: 'AWS', category: 'Compute', defaultFill: '#FF9900', defaultStroke: '#EC7211', defaultW: 90, defaultH: 60, Icon: AwsEC2Icon },
+  { id: 'aws-s3', label: 'S3 Bucket', provider: 'AWS', category: 'Storage', defaultFill: '#3F8624', defaultStroke: '#2D5F19', defaultW: 90, defaultH: 60, Icon: AwsS3Icon },
+  { id: 'aws-rds', label: 'RDS Database', provider: 'AWS', category: 'Database', defaultFill: '#527FFF', defaultStroke: '#235099', defaultW: 90, defaultH: 60, Icon: AwsRDSIcon },
+  { id: 'aws-lambda', label: 'Lambda', provider: 'AWS', category: 'Compute', defaultFill: '#FF9900', defaultStroke: '#EC7211', defaultW: 80, defaultH: 60, Icon: AwsLambdaIcon },
+  { id: 'aws-apigw', label: 'API Gateway', provider: 'AWS', category: 'Integration', defaultFill: '#A166FF', defaultStroke: '#7D3FD3', defaultW: 90, defaultH: 60, Icon: AwsAPIGWIcon },
+  { id: 'aws-cloudfront', label: 'CloudFront', provider: 'AWS', category: 'Content Delivery', defaultFill: '#FF9900', defaultStroke: '#EC7211', defaultW: 90, defaultH: 60, Icon: AwsCloudFrontIcon },
+  { id: 'aws-sqs', label: 'SQS Queue', provider: 'AWS', category: 'Messaging', defaultFill: '#FF4F8B', defaultStroke: '#C8184A', defaultW: 90, defaultH: 60, Icon: AwsSQSIcon },
+  { id: 'aws-elb', label: 'Elastic LB', provider: 'AWS', category: 'Network', defaultFill: '#FF9900', defaultStroke: '#EC7211', defaultW: 90, defaultH: 60, Icon: AwsELBIcon },
+
+  // Azure
+  { id: 'azure-vm', label: 'Virtual Machine', provider: 'Azure', category: 'Compute', defaultFill: '#0078D4', defaultStroke: '#1055B0', defaultW: 90, defaultH: 60, Icon: AzureVMIcon },
+  { id: 'azure-blob', label: 'Blob Storage', provider: 'Azure', category: 'Storage', defaultFill: '#0078D4', defaultStroke: '#1055B0', defaultW: 90, defaultH: 60, Icon: AzureBlobIcon },
+  { id: 'azure-sql', label: 'SQL Database', provider: 'Azure', category: 'Database', defaultFill: '#0078D4', defaultStroke: '#1055B0', defaultW: 90, defaultH: 60, Icon: AzureSQLIcon },
+  { id: 'azure-func', label: 'Function App', provider: 'Azure', category: 'Compute', defaultFill: '#0062AD', defaultStroke: '#003877', defaultW: 90, defaultH: 60, Icon: AzureFuncIcon },
+
+  // GCP
+  { id: 'gcp-gce', label: 'Compute Engine', provider: 'GCP', category: 'Compute', defaultFill: '#4285F4', defaultStroke: '#1555CE', defaultW: 90, defaultH: 60, Icon: GcpGCEIcon },
+  { id: 'gcp-gcs', label: 'Cloud Storage', provider: 'GCP', category: 'Storage', defaultFill: '#FBBC04', defaultStroke: '#E8AB00', defaultW: 90, defaultH: 60, Icon: GcpGCSIcon },
+  { id: 'gcp-bq', label: 'BigQuery', provider: 'GCP', category: 'Analytics', defaultFill: '#34A853', defaultStroke: '#137333', defaultW: 90, defaultH: 60, Icon: GcpBQIcon },
+  { id: 'gcp-pubsub', label: 'Pub/Sub', provider: 'GCP', category: 'Messaging', defaultFill: '#EA4335', defaultStroke: '#B71C1C', defaultW: 90, defaultH: 60, Icon: GcpPubSubIcon },
+
+  // Kubernetes
+  { id: 'k8s-pod', label: 'Pod', provider: 'K8s', category: 'Compute', defaultFill: '#326CE5', defaultStroke: '#003DA5', defaultW: 80, defaultH: 60, Icon: K8sPodIcon },
+  { id: 'k8s-service', label: 'Service', provider: 'K8s', category: 'Network', defaultFill: '#326CE5', defaultStroke: '#003DA5', defaultW: 90, defaultH: 60, Icon: K8sServiceIcon },
+  { id: 'k8s-deploy', label: 'Deployment', provider: 'K8s', category: 'Compute', defaultFill: '#326CE5', defaultStroke: '#003DA5', defaultW: 90, defaultH: 60, Icon: K8sDeployIcon },
+  { id: 'k8s-ingress', label: 'Ingress', provider: 'K8s', category: 'Network', defaultFill: '#326CE5', defaultStroke: '#003DA5', defaultW: 90, defaultH: 60, Icon: K8sIngressIcon },
+  { id: 'k8s-configmap', label: 'ConfigMap', provider: 'K8s', category: 'Config', defaultFill: '#326CE5', defaultStroke: '#003DA5', defaultW: 90, defaultH: 60, Icon: K8sConfigMapIcon },
+
+  // Generic
+  { id: 'gen-server', label: 'Server', provider: 'Generic', category: 'Compute', defaultFill: '#607D8B', defaultStroke: '#37474F', defaultW: 90, defaultH: 60, Icon: GenericServerIcon },
+  { id: 'gen-db', label: 'Database', provider: 'Generic', category: 'Data', defaultFill: '#607D8B', defaultStroke: '#37474F', defaultW: 80, defaultH: 60, Icon: GenericDBIcon },
+  { id: 'gen-queue', label: 'Queue', provider: 'Generic', category: 'Messaging', defaultFill: '#607D8B', defaultStroke: '#37474F', defaultW: 90, defaultH: 60, Icon: GenericQueueIcon },
+  { id: 'gen-client', label: 'Client', provider: 'Generic', category: 'UI', defaultFill: '#607D8B', defaultStroke: '#37474F', defaultW: 80, defaultH: 60, Icon: GenericClientIcon },
+];
+
+export function getCloudShape(id: string): CloudShapeDef | undefined {
+  return CLOUD_SHAPES.find((s) => s.id === id);
+}
+
+export function groupShapesByProvider(): Record<CloudProvider, CloudShapeDef[]> {
+  const grouped: Record<CloudProvider, CloudShapeDef[]> = {
+    AWS: [],
+    Azure: [],
+    GCP: [],
+    K8s: [],
+    Generic: [],
+  };
+  CLOUD_SHAPES.forEach((s) => grouped[s.provider].push(s));
+  return grouped;
+}
