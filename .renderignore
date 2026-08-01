@@ -1,0 +1,6 @@
+src/
+.vercel/
+.next/
+node_modules/
+graphify-out/
+templates/
