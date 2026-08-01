@@ -1,0 +1,267 @@
+================================================================================
+                    RENDER BACKEND DEPLOYMENT GUIDE
+                          Visual Step-by-Step
+================================================================================
+
+🎯 YOUR TASK: Deploy backend on Render in 5 minutes
+
+Your GitHub repo is ready. Let's deploy it!
+
+================================================================================
+                            STEP 1: OPEN RENDER
+================================================================================
+
+1. Open in browser: https://dashboard.render.com
+
+2. You'll see a page like this:
+
+   ╔════════════════════════════════════════════════════════════════╗
+   ║  Render Dashboard                                              ║
+   ║  ┌──────────────────────────────────────────────────────────┐ ║
+   ║  │ My Dashboard  │ Web Services  │ Databases  │ ...         │ ║
+   ║  ├──────────────────────────────────────────────────────────┤ ║
+   ║  │                                                            │ ║
+   ║  │  [+ New] ◄── CLICK HERE                                  │ ║
+   ║  │                                                            │ ║
+   ║  │  My Services:                                             │ ║
+   ║  │  (empty - first time)                                     │ ║
+   ║  │                                                            │ ║
+   ║  └──────────────────────────────────────────────────────────┘ ║
+   ╚════════════════════════════════════════════════════════════════╝
+
+================================================================================
+                        STEP 2: CLICK "NEW" BUTTON
+================================================================================
+
+Click the "+ New" button (blue, top right)
+
+You'll see a dropdown menu:
+
+   ┌─────────────────────────┐
+   │ Web Service    ◄─ CLICK │
+   │ Static Site             │
+   │ Postgres Database       │
+   │ MySQL Database          │
+   │ Redis Database          │
+   │ ...                     │
+   └─────────────────────────┘
+
+================================================================================
+                       STEP 3: SELECT WEB SERVICE
+================================================================================
+
+Click "Web Service"
+
+You'll see deployment options:
+
+   ┌──────────────────────────────────────────────────────────┐
+   │ Deploy your own code                                     │
+   │                                                          │
+   │ Choose a repository or use an example:                  │
+   │                                                          │
+   │  ◯ Public Repository                                    │
+   │  ◯ Private Repository                                   │
+   │  ◉ Build and deploy from a Git repository ◄─ SELECT   │
+   │                                                          │
+   │           [NEXT]                                         │
+   └──────────────────────────────────────────────────────────┘
+
+================================================================================
+                    STEP 4: CONNECT GITHUB (IF NEEDED)
+================================================================================
+
+If you see "Connect GitHub", click it:
+
+   ┌──────────────────────────────────────────────────────────┐
+   │                                                          │
+   │ [Connect your GitHub account]                           │
+   │                                                          │
+   │ A browser window opens → Authorize Render               │
+   │ After auth → Come back to Render                         │
+   │                                                          │
+   └──────────────────────────────────────────────────────────┘
+
+================================================================================
+                       STEP 5: SELECT REPOSITORY
+================================================================================
+
+In the repository dropdown, select your repo:
+
+   ┌──────────────────────────────────────────────────────────┐
+   │ Repository: [Big-market-                    ▼]           │
+   │             ┌────────────────────────────────┐            │
+   │             │ Big-market-          ◄─ SELECT │            │
+   │             │ other-repo                     │            │
+   │             │ another-project                │            │
+   │             └────────────────────────────────┘            │
+   │                                                          │
+   │ Branch: [main                              ▼]           │
+   │         ┌────────────────────────────────┐               │
+   │         │ main               ◄─ CONFIRM │               │
+   │         │ develop                        │               │
+   │         └────────────────────────────────┘               │
+   │                                                          │
+   └──────────────────────────────────────────────────────────┘
+
+================================================================================
+                    STEP 6: CONFIGURE SERVICE SETTINGS
+================================================================================
+
+Fill in these fields:
+
+   ┌──────────────────────────────────────────────────────────┐
+   │ Service Name:  [inkspace-backend                      ]  │
+   │                                                          │
+   │ Environment:   [Node                            ▼]      │
+   │                                                          │
+   │ Region:        [Oregon (us-west)               ▼]       │
+   │                                                          │
+   │ Plan:          ◉ Free  ○ Starter ($7/mo)              │
+   │                (Free is OK for testing)                 │
+   │                                                          │
+   │ Build Command: [npm install                          ]  │
+   │                                                          │
+   │ Start Command: [npm start                           ]   │
+   │                                                          │
+   └──────────────────────────────────────────────────────────┘
+
+================================================================================
+                    STEP 7: ADD ENVIRONMENT VARIABLES
+================================================================================
+
+Look for "Environment" tab or section
+
+Click "Add Environment Variable"
+
+Add TWO variables:
+
+   First Variable:
+   ┌──────────────────────────────────────────────────────────┐
+   │ Key: [NODE_ENV                                        ]  │
+   │ Value: [production                                    ]  │
+   │                                                          │
+   │ [+ Add]                                                  │
+   └──────────────────────────────────────────────────────────┘
+
+   Second Variable:
+   ┌──────────────────────────────────────────────────────────┐
+   │ Key: [PORT                                            ]  │
+   │ Value: [3000                                          ]  │
+   │                                                          │
+   │ [+ Add]                                                  │
+   └──────────────────────────────────────────────────────────┘
+
+================================================================================
+                        STEP 8: CREATE WEB SERVICE
+================================================================================
+
+Scroll to bottom and click:
+
+   ┌──────────────────────────────┐
+   │ [Create Web Service]         │ ◄─ BIG BLUE BUTTON
+   └──────────────────────────────┘
+
+Now Render will:
+   1. Clone your GitHub repo
+   2. Install dependencies
+   3. Start your server
+   4. Assign a URL
+
+⏳ This takes 5-10 minutes
+
+You'll see:
+   🔄 Cloning repository...
+   📦 Installing dependencies...
+   🔨 Building...
+   ✅ Build succeeded
+   🚀 Live!
+
+================================================================================
+                    STEP 9: GET YOUR BACKEND URL
+================================================================================
+
+Once it's "Live", you'll see a URL like:
+
+   https://inkspace-backend-xxxxx.onrender.com
+
+   ┌─────────────────────────────────────────┐
+   │ 🎯 COPY THIS URL                        │
+   │                                         │
+   │ You need it for the next step!          │
+   └─────────────────────────────────────────┘
+
+================================================================================
+                 STEP 10: UPDATE VERCEL ENVIRONMENT VARIABLES
+================================================================================
+
+1. Open: https://vercel.com/dashboard
+
+2. Click on your "task" project
+
+3. Go to: Settings → Environment Variables
+
+4. Add/Update these variables:
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ Name: NEXT_PUBLIC_API_URL                             │
+   │ Value: https://your-render-url.onrender.com           │
+   │                                                         │
+   │ Name: NEXT_PUBLIC_WEBSOCKET_URL                        │
+   │ Value: wss://your-render-url.onrender.com             │
+   │                                                         │
+   │ Name: NODE_ENV                                         │
+   │ Value: production                                      │
+   │                                                         │
+   │ [Save]                                                  │
+   └─────────────────────────────────────────────────────────┘
+
+   (Replace your-render-url with your actual Render URL)
+
+5. Vercel auto-redeploys with new variables ✅
+
+================================================================================
+                        STEP 11: TEST EVERYTHING
+================================================================================
+
+Test 1: Backend Running?
+   ✓ Go to your Render URL in browser
+   ✓ Should show "Cannot GET /" (this is OK!)
+   ✓ Backend is running ✅
+
+Test 2: Frontend Loading?
+   ✓ Go to: https://task-eight-psi-64.vercel.app
+   ✓ Should load your app
+   ✓ Check browser console (F12) - no red errors
+   ✓ Frontend working ✅
+
+Test 3: Real-Time Sync?
+   ✓ Create a new board
+   ✓ Open SAME board in another browser window
+   ✓ Draw/type in one window
+   ✓ Changes appear in other window instantly?
+   ✓ Real-time working ✅
+
+================================================================================
+                            ✅ DONE!
+================================================================================
+
+If all tests pass:
+
+   ✅ Frontend: LIVE on Vercel
+   ✅ Backend: LIVE on Render
+   ✅ Real-time sync: WORKING
+   ✅ Auto-deploy: ENABLED
+
+   🎉 YOUR APP IS PRODUCTION READY! 🎉
+
+Your URLs:
+   Frontend: https://task-eight-psi-64.vercel.app
+   Backend:  https://your-url.onrender.com
+   
+Future updates: Just git push → Auto deploys everywhere!
+
+================================================================================
+                         🚀 YOU'RE ALL SET!
+================================================================================
+
+Questions? See RENDER_DEPLOY_STEPS.md for detailed steps or troubleshooting.
