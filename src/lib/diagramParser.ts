@@ -360,20 +360,18 @@ export function layoutDiagram(parsed: ParseResult, opts: LayoutOptions = {}): Di
         z:      zBase++,
       });
     } else {
-      // Map diamond → rect with text; circle → circle
-      const elType = n.shape === 'circle' ? 'circle'
-                   : n.shape === 'cylinder' ? 'rect'
-                   : 'rect';
-
+      // Preserve shape information for proper rendering
       elements.push({
-        type:        elType,
+        type:        'rect', // Canvas element type
         x: cx, y: cy, w: n.w, h: n.h,
         text:        n.label,
         fill:        n.fill  || '#E3F2FD',
         stroke:      n.stroke || '#1976D2',
         strokeWidth: 2,
         roughness:   0.4,
-        radius:      n.shape === 'diamond' ? 4 : n.shape === 'stadium' ? 28 : 8,
+        // Store the Mermaid shape type for rendering
+        ...(({ shapeType: n.shape } as any)),
+        radius:      n.shape === 'diamond' ? 4 : n.shape === 'stadium' ? 28 : n.shape === 'circle' ? 40 : 8,
         fontSize:    13,
         z:           zBase++,
       });
