@@ -92,6 +92,7 @@ const TYPE_LABELS: Record<string, string> = {
   note: 'Sticky Note', handwriting: 'Handwriting', text: 'Text',
   rect: 'Rectangle', circle: 'Circle', line: 'Line',
   arrow: 'Arrow', draw: 'Freehand', frame: 'Frame', image: 'Image',
+  icon: 'Tech Icon', 'cloud-shape': 'Cloud Shape', schema: 'Schema',
 };
 
 export const InspectorPanel: React.FC = () => {
@@ -263,6 +264,29 @@ export const InspectorPanel: React.FC = () => {
                     <button key={label} onClick={action} className="secondary-button justify-center" style={{ fontSize: 12, padding: '6px 8px', borderRadius: 8 }}>{label}</button>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Icon */}
+            {el.type === 'icon' && (
+              <div>
+                <SectionTitle>Icon</SectionTitle>
+                <GroupedList>
+                  <ListRow label="Label">
+                    <input
+                      value={el.text || ''}
+                      onChange={(e) => upd({ text: e.target.value })}
+                      className="bg-transparent text-right outline-none"
+                      style={{ width: 126, fontSize: 14, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}
+                    />
+                  </ListRow>
+                  <ListRow label="Icon ID">
+                    <span style={{ display: 'inline-block', width: 126, textAlign: 'right', fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {el.iconId}
+                    </span>
+                  </ListRow>
+                  <ListRow label="Label Size"><Slider value={el.fontSize || 12} onChange={(v) => upd({ fontSize: v })} min={9} max={24} /></ListRow>
+                </GroupedList>
               </div>
             )}
 

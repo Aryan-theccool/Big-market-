@@ -10,6 +10,7 @@
     "test": "node test-canvex.js"
   },
   "dependencies": {
+    "@iconify/react": "^6.0.2",
     "@liveblocks/client": "^3.19.3",
     "@liveblocks/yjs": "^3.19.3",
     "@tiptap/extension-collaboration": "^3.28.0",
