@@ -3,7 +3,7 @@ import { create } from 'zustand';
 export type ElementType =
   | 'note' | 'rect' | 'circle' | 'line' | 'arrow'
   | 'draw' | 'text' | 'handwriting' | 'frame' | 'image'
-  | 'cloud-shape' | 'schema';
+  | 'cloud-shape' | 'schema' | 'icon';
 
 export interface SchemaField {
   name: string;
@@ -46,6 +46,10 @@ export interface CanvasElement {
   _typing?: boolean;
   // Cloud / engineering shape
   shapeId?: string;          // e.g. 'aws-ec2', 'gcp-bigquery', 'k8s-pod'
+  // Iconify technology icon
+  iconId?: string;           // e.g. 'logos:typescript-icon', 'simple-icons:github'
+  iconName?: string;
+  iconColor?: string;
   // Database schema grid
   schemaName?: string;
   schemaFields?: SchemaField[];

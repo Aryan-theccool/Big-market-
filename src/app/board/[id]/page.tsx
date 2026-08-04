@@ -22,6 +22,7 @@ import { SplitScreenLayout } from '../../../components/editor/SplitScreenLayout'
 import { useEditorStore } from '../../../store/editorStore';
 import { DiagramPanel } from '../../../components/ui/DiagramPanel';
 import { ShapesPanel } from '../../../components/ui/ShapesPanel';
+import { IconLibraryPanel } from '../../../components/ui/IconLibraryPanel';
 import { triggerImageUpload } from '../../../utils/imageHelper';
 
 interface Toast { id: string; message: string; type: 'info' | 'success' | 'error' | 'warning'; }
@@ -157,6 +158,7 @@ export default function BoardIdPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [diagramOpen, setDiagramOpen] = useState(false);
+  const [iconsOpen, setIconsOpen] = useState(false);
 
   // Real-time collab
   useCollabSync(roomId);
@@ -224,13 +226,14 @@ export default function BoardIdPage() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') { store.copySelected(); return; }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'v') { store.pasteSelected(); return; }
       if ((e.metaKey || e.ctrlKey) && e.key === '0') { e.preventDefault(); store.fitToScreen(vpSize.w, vpSize.h); return; }
-      const keyMap: Record<string, string> = { v: 'select', h: 'hand', n: 'note', t: 'text', r: 'rect', c: 'circle', l: 'line', a: 'arrow', d: 'draw', e: 'eraser', f: 'frame', q: 'export' };
-      if (keyMap[e.key.toLowerCase()] && !e.metaKey && !e.ctrlKey) { store.setTool(keyMap[e.key.toLowerCase()]); return; }
-      if (e.key.toLowerCase() === 'i' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); triggerImageUpload(store, (msg) => addToast(msg, 'info')); return; }
       if (e.shiftKey && e.key.toLowerCase() === 't') { e.preventDefault(); tplModal.openModal(); return; }
       if (e.shiftKey && e.key.toLowerCase() === 'd') { e.preventDefault(); setDiagramOpen((p) => !p); return; }
       if (e.shiftKey && e.key.toLowerCase() === 's') { e.preventDefault(); setShapesOpen((p) => !p); return; }
-      if (e.key === 'Escape') { store.setSelected([]); store.setTool('select'); setRegionBox(null); setCmdOpen(false); setExportModalOpen(false); setShareOpen(false); setDiagramOpen(false); setShapesOpen(false); return; }
+      if (e.shiftKey && e.key.toLowerCase() === 'i') { e.preventDefault(); setIconsOpen((p) => !p); return; }
+      const keyMap: Record<string, string> = { v: 'select', h: 'hand', n: 'note', t: 'text', r: 'rect', c: 'circle', l: 'line', a: 'arrow', d: 'draw', e: 'eraser', f: 'frame', q: 'export' };
+      if (keyMap[e.key.toLowerCase()] && !e.metaKey && !e.ctrlKey && !e.shiftKey) { store.setTool(keyMap[e.key.toLowerCase()]); return; }
+      if (e.key.toLowerCase() === 'i' && !e.metaKey && !e.ctrlKey && !e.shiftKey) { e.preventDefault(); triggerImageUpload(store, (msg) => addToast(msg, 'info')); return; }
+      if (e.key === 'Escape') { store.setSelected([]); store.setTool('select'); setRegionBox(null); setCmdOpen(false); setExportModalOpen(false); setShareOpen(false); setDiagramOpen(false); setShapesOpen(false); setIconsOpen(false); return; }
       if (e.key === 'Delete' || e.key === 'Backspace') { store.deleteSelected(); return; }
       if (e.key === 'g') { store.toggleGrid(); return; }
       if (e.key === 'm') { store.toggleMini(); return; }
@@ -326,7 +329,7 @@ export default function BoardIdPage() {
       {/* Left tool rail — only in canvas / split modes */}
       {splitMode !== 'editor' && (
         <div className="absolute inset-0 top-[52px] pointer-events-none">
-          <div className="pointer-events-auto"><LeftToolRail onOpenTemplates={tplModal.openModal} onOpenDiagram={() => setDiagramOpen(true)} onOpenShapes={() => setShapesOpen(true)} /></div>
+          <div className="pointer-events-auto"><LeftToolRail onOpenTemplates={tplModal.openModal} onOpenDiagram={() => setDiagramOpen(true)} onOpenShapes={() => setShapesOpen(true)} onOpenIcons={() => setIconsOpen(true)} /></div>
         </div>
       )}
 
@@ -371,6 +374,11 @@ export default function BoardIdPage() {
       {/* Shapes panel */}
       <AnimatePresence>
         {shapesOpen && <ShapesPanel onClose={() => setShapesOpen(false)} />}
+      </AnimatePresence>
+
+      {/* Tech icon library */}
+      <AnimatePresence>
+        {iconsOpen && <IconLibraryPanel onClose={() => setIconsOpen(false)} />}
       </AnimatePresence>
 
       {/* Share modal */}
