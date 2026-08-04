@@ -443,10 +443,14 @@ export function diagramToCanvasElements(
 ): { elements: CanvasElement[]; errors: string[] } {
   const parsed = parseDiagramCode(code);
   const { elements: raw, nodeMap } = layoutDiagram(parsed, opts);
+  
+  // Generate a unique groupId for all elements in this diagram
+  const diagramGroupId = 'dg_' + Math.random().toString(36).slice(2, 9);
 
   const elements: CanvasElement[] = raw.map((el) => ({
     ...el,
     id: uid(),
+    groupId: diagramGroupId, // All diagram elements share the same group
   } as CanvasElement));
 
   return { elements, errors: parsed.errors };

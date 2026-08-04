@@ -53,6 +53,9 @@ export interface CanvasElement {
   // Database schema grid
   schemaName?: string;
   schemaFields?: SchemaField[];
+  // Diagram grouping
+  groupId?: string;          // Group ID for diagram flows to move together
+  shapeType?: string;        // Mermaid shape type (diamond, cylinder, stadium, circle)
 }
 
 export interface Viewport {

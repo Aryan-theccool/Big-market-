@@ -839,15 +839,31 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     if (store.activeTool === 'hand' || spacePressed) return;
 
     let nextSelected = store.selected;
-    if (e.shiftKey) {
-      nextSelected = store.selected.includes(el.id)
-        ? store.selected.filter((id) => id !== el.id)
-        : [...store.selected, el.id];
-      store.setSelected(nextSelected);
-    } else if (!store.selected.includes(el.id)) {
-      nextSelected = [el.id];
-      store.setSelected(nextSelected);
+    
+    // If element has a groupId, select the entire group
+    if (el.groupId) {
+      const groupElements = store.elements.filter((x) => x.groupId === el.groupId);
+      const groupIds = groupElements.map((x) => x.id);
+      
+      if (e.shiftKey) {
+        nextSelected = store.selected.some((id) => groupIds.includes(id))
+          ? store.selected.filter((id) => !groupIds.includes(id))
+          : [...store.selected, ...groupIds];
+      } else {
+        nextSelected = groupIds;
+      }
+    } else {
+      // Single element selection (no group)
+      if (e.shiftKey) {
+        nextSelected = store.selected.includes(el.id)
+          ? store.selected.filter((id) => id !== el.id)
+          : [...store.selected, el.id];
+      } else if (!store.selected.includes(el.id)) {
+        nextSelected = [el.id];
+      }
     }
+    
+    store.setSelected(nextSelected);
 
     const pt = screenToWorld(e.clientX, e.clientY);
     const selEls = nextSelected.map((id) => store.elements.find((x) => x.id === id)).filter(Boolean) as CanvasElement[];
