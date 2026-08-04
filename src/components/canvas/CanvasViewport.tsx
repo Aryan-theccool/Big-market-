@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useCanvasStore, CanvasElement } from '../../store/canvasStore';
 import { StickyNote, HandwritingText, TextElement, RoughShape, ImageElement, SelectionBox } from '../elements/CanvasElements';
+import { CloudShapeElement } from '../elements/CloudShapeElement';
 import { SmartArrow } from './SmartArrow';
 import { compressAndResizeImage } from '../../utils/imageHelper';
 import { useImageDrop } from '../../hooks/useImageDrop';
@@ -979,6 +980,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
           if (el.type === 'handwriting') return <HandwritingText  key={el.id} element={el} isSelected={isSel} onPointerDown={onPD} />;
           if (el.type === 'text')        return <TextElement       key={el.id} element={el} isSelected={isSel} onPointerDown={onPD} />;
           if (el.type === 'image')       return <ImageElement      key={el.id} element={el} isSelected={isSel} onPointerDown={onPD} />;
+          if (el.type === 'cloud-shape') return <CloudShapeElement key={el.id} element={el} isSelected={isSel} onPointerDown={onPD} />;
           // Smart-routed arrow — has fromId/toId set by diagram parser
           if (el.type === 'arrow' && (el as any).fromId) return <SmartArrow key={el.id} element={el} isSelected={isSel} onPointerDown={onPD} />;
           return                                <RoughShape        key={el.id} element={el} isSelected={isSel} onPointerDown={onPD} />;
