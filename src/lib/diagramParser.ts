@@ -106,12 +106,12 @@ function parseMermaidNodeDecl(raw: string): { id: string; label: string; shape: 
 /* ─── Default node dimensions per shape ─────────────────────────────── */
 function defaultSize(shape: NodeShape): { w: number; h: number } {
   switch (shape) {
-    case 'circle':   return { w: 80,  h: 80  };
-    case 'diamond':  return { w: 120, h: 80  };
-    case 'stadium':  return { w: 140, h: 50  };
-    case 'cylinder': return { w: 120, h: 70  };
-    case 'note':     return { w: 160, h: 100 };
-    default:         return { w: 160, h: 56  };
+    case 'circle':   return { w: 100, h: 100 };  // Increased from 80
+    case 'diamond':  return { w: 140, h: 100 };  // Increased from 120x80
+    case 'stadium':  return { w: 160, h: 60  };  // Increased from 140x50
+    case 'cylinder': return { w: 140, h: 85  };  // Increased from 120x70
+    case 'note':     return { w: 180, h: 120 };  // Increased from 160x100
+    default:         return { w: 180, h: 70  };  // Increased from 160x56 - better for text
   }
 }
 
@@ -307,8 +307,8 @@ export interface DiagramCanvas {
 export function layoutDiagram(parsed: ParseResult, opts: LayoutOptions = {}): DiagramCanvas {
   const {
     direction   = 'TB',
-    nodeSpacingX = 60,
-    nodeSpacingY = 80,
+    nodeSpacingX = 120,  // Increased from 60 for better spacing
+    nodeSpacingY = 100,  // Increased from 80 for better vertical spacing
     originX      = 100,
     originY      = 100,
   } = opts;
@@ -319,8 +319,8 @@ export function layoutDiagram(parsed: ParseResult, opts: LayoutOptions = {}): Di
     rankdir:  direction,
     nodesep:  nodeSpacingX,
     ranksep:  nodeSpacingY,
-    marginx:  20,
-    marginy:  20,
+    marginx:  40,  // Increased from 20
+    marginy:  40,  // Increased from 20
   });
 
   // Add nodes

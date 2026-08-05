@@ -118,8 +118,8 @@ export const DiagramPanel: React.FC<DiagramPanelProps> = ({ onClose }) => {
       direction,
       originX: Math.max(40, originX),
       originY: Math.max(40, originY),
-      nodeSpacingX: 60,
-      nodeSpacingY: 80,
+      nodeSpacingX: 100,  // Increased from 60
+      nodeSpacingY: 120,  // Increased from 80
     });
 
     if (errs.length > 0) {
