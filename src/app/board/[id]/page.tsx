@@ -230,6 +230,7 @@ export default function BoardIdPage() {
       if (e.shiftKey && e.key.toLowerCase() === 'd') { e.preventDefault(); setDiagramOpen((p) => !p); return; }
       if (e.shiftKey && e.key.toLowerCase() === 's') { e.preventDefault(); setShapesOpen((p) => !p); return; }
       if (e.shiftKey && e.key.toLowerCase() === 'i') { e.preventDefault(); setIconsOpen((p) => !p); return; }
+      if (e.key.toLowerCase() === 'z' && !e.metaKey && !e.ctrlKey && !e.shiftKey) { e.preventDefault(); store.fitToScreen(vpSize.w, vpSize.h); return; }
       const keyMap: Record<string, string> = { v: 'select', h: 'hand', n: 'note', t: 'text', r: 'rect', c: 'circle', l: 'line', a: 'arrow', d: 'draw', e: 'eraser', f: 'frame', q: 'export' };
       if (keyMap[e.key.toLowerCase()] && !e.metaKey && !e.ctrlKey && !e.shiftKey) { store.setTool(keyMap[e.key.toLowerCase()]); return; }
       if (e.key.toLowerCase() === 'i' && !e.metaKey && !e.ctrlKey && !e.shiftKey) { e.preventDefault(); triggerImageUpload(store, (msg) => addToast(msg, 'info')); return; }

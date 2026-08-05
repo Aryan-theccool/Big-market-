@@ -90,6 +90,32 @@ export const LeftToolRail: React.FC<LeftToolRailProps> = ({ onOpenTemplates, onO
         );
       })}
 
+      {/* Zoom to Fit All */}
+      <div className="relative group">
+        <button
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              store.fitToScreen(window.innerWidth, window.innerHeight);
+            }
+          }}
+          title="Zoom to Fit  Z"
+          className="flex items-center justify-center rounded-[10px] transition-all active:scale-95"
+          style={{ width: 36, height: 36, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 3H5a2 2 0 00-2 2v3m16-5h3a2 2 0 012 2v3M3 16v3a2 2 0 002 2h3m14 0h3a2 2 0 002-2v-3"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        <div className="pointer-events-none absolute left-full ml-2.5 top-1/2 -translate-y-1/2 flex items-center gap-2 rounded-[8px] px-2.5 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-100 whitespace-nowrap z-50"
+          style={{ background: 'var(--bg-surface)', boxShadow: 'var(--shadow-lg)', border: '0.5px solid var(--border)' }}>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}>Zoom to Fit</span>
+          <kbd style={{ fontSize: 10, color: 'var(--text-muted)', background: 'var(--bg-secondary)', border: '0.5px solid var(--border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'var(--font-mono)' }}>Z</kbd>
+        </div>
+      </div>
+
       {/* Separator + templates + delete */}
       <div style={{ height: 1, background: 'var(--border)', margin: '2px 0' }} />
       {onOpenTemplates && (
