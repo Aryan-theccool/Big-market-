@@ -16,11 +16,17 @@ export const IconElement: React.FC<IconElementProps> = ({ element, isSelected, o
   const label = element.text || element.iconName || '';
   const iconSize = Math.max(28, Math.min(w, h) * (label ? 0.54 : 0.68));
 
+  const handlePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onPointerDown(e);
+  };
+
   return (
     <div
       data-id={element.id}
       className="absolute pointer-events-auto select-none group"
-      onPointerDown={onPointerDown}
+      onPointerDown={handlePointerDown}
       style={{
         left: element.x,
         top: element.y,
@@ -40,6 +46,7 @@ export const IconElement: React.FC<IconElementProps> = ({ element, isSelected, o
         justifyContent: 'center',
         padding: 10,
         cursor: 'move',
+        touchAction: 'none',
       }}
     >
       <div
@@ -74,6 +81,7 @@ export const IconElement: React.FC<IconElementProps> = ({ element, isSelected, o
             fontWeight: element.bold ? 700 : 600,
             color: element.stroke || 'var(--text-primary)',
             lineHeight: 1.15,
+            pointerEvents: 'none',
           }}
         >
           {label}
