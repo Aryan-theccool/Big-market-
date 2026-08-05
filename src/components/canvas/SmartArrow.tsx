@@ -51,13 +51,14 @@ export const SmartArrow: React.FC<SmartArrowProps> = ({ element, isSelected, onP
   return (
     <svg
       data-id={element.id}
-      className="absolute pointer-events-none overflow-visible"
+      className="absolute overflow-visible"
       style={{
         left: 0, top: 0,
         width: '100%', height: '100%',
         position: 'absolute',
         zIndex: element.z || 0,
         overflow: 'visible',
+        pointerEvents: 'auto',
       }}
       onPointerDown={onPointerDown}
     >
@@ -70,7 +71,7 @@ export const SmartArrow: React.FC<SmartArrowProps> = ({ element, isSelected, onP
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={dashed ? '6 4' : undefined}
-        style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
+        style={{ pointerEvents: 'auto', cursor: 'pointer' }}
       />
 
       {/* Arrowhead */}

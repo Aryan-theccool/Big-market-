@@ -20,10 +20,24 @@ export const CloudShapeElement: React.FC<CloudShapeElementProps> = ({
 
   if (!shape) {
     return (
-      <g onPointerDown={onPointerDown}>
+      <svg
+        data-id={element.id}
+        className="absolute pointer-events-auto overflow-visible"
+        style={{
+          left: element.x,
+          top: element.y,
+          width: element.w || 90,
+          height: element.h || 60,
+          zIndex: element.z || 0,
+          opacity: element.opacity ?? 1,
+          transform: element.rot ? `rotate(${element.rot}deg)` : undefined,
+          transformOrigin: 'center',
+        }}
+        onPointerDown={onPointerDown}
+      >
         <rect
-          x={element.x}
-          y={element.y}
+          x={0}
+          y={0}
           width={element.w || 90}
           height={element.h || 60}
           fill="#E0E0E0"
@@ -32,8 +46,8 @@ export const CloudShapeElement: React.FC<CloudShapeElementProps> = ({
           rx={4}
         />
         <text
-          x={element.x + (element.w || 90) / 2}
-          y={element.y + (element.h || 60) / 2}
+          x={(element.w || 90) / 2}
+          y={(element.h || 60) / 2}
           textAnchor="middle"
           dominantBaseline="middle"
           fontSize={12}
@@ -42,7 +56,7 @@ export const CloudShapeElement: React.FC<CloudShapeElementProps> = ({
         >
           ? {shapeId}
         </text>
-      </g>
+      </svg>
     );
   }
 
@@ -52,12 +66,22 @@ export const CloudShapeElement: React.FC<CloudShapeElementProps> = ({
   const stroke = element.stroke || shape.defaultStroke;
 
   return (
-    <g
+    <svg
       data-id={element.id}
-      transform={`translate(${element.x},${element.y})${element.rot ? ` rotate(${element.rot})` : ''}`}
-      opacity={element.opacity ?? 1}
+      className="absolute pointer-events-auto overflow-visible"
+      style={{
+        left: element.x,
+        top: element.y,
+        width: w,
+        height: h,
+        zIndex: element.z || 0,
+        opacity: element.opacity ?? 1,
+        transform: element.rot ? `rotate(${element.rot}deg)` : undefined,
+        transformOrigin: 'center',
+        cursor: 'pointer',
+      }}
       onPointerDown={onPointerDown}
-      style={{ cursor: 'pointer' }}
+      viewBox={`0 0 ${w} ${h}`}
     >
       {/* Background rect */}
       <rect
@@ -108,6 +132,6 @@ export const CloudShapeElement: React.FC<CloudShapeElementProps> = ({
           rx={10}
         />
       )}
-    </g>
+    </svg>
   );
 };
